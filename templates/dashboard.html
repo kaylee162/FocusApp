@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<h2>Hello, {{ user.username }} 👋</h2>
+<p>Welcome back to your Focus Dashboard!</p>
+
+<!-- ================= PROGRESS SUMMARY ================= -->
+<section class="goal-summary">
+  <h3>Your Progress Today</h3>
+
+  <div class="progress-container" style="--progress: {{ percent_today|round(0) }}%;">
+    <div class="progress-bar"></div>
+  </div>
+
+  <p>{{ completed_today }} of {{ total_today }} goals completed ({{ percent_today|round(0) }}%)</p>
+  {% if total_today > 0 and completed_today == total_today %}
+    <p class="celebrate">🎉 You’ve completed all your goals for today!</p>
+  {% endif %}
+
+</section>
+
+
+<!-- ================= ADD GOAL BUTTON + MODAL ================= -->
+<section class="add-goal">
+  <button id="openGoalModal" class="btn add-goal-btn">+ Add Goal</button>
+
+  <!-- Modal Overlay -->
+  <div id="goalModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeGoalModal" class="close-btn">&times;</span>
+      <h3>Add a New Goal</h3>
+      <form method="POST" class="goal-form">
+        {{ form.hidden_tag() }}
+        <div class="form-grid">
+          <div>
+            <label>{{ form.title.label }}</label>
+            {{ form.title(size=40) }}
+          </div>
+          <div>
+            <label>{{ form.category.label }}</label>
+            {{ form.category() }}
+          </div>
+          <div>
+            <label>{{ form.repeat_type.label }}</label>
+            {{ form.repeat_type(id="repeat_type") }}
+          </div>
+          <div id="target-day-field">
+            <label>{{ form.target_day.label }}</label>
+            {{ form.target_day(size=40, id="target_day") }}
+          </div>
+        </div>
+        <label>{{ form.description.label }}</label>
+        {{ form.description(rows=3, cols=40) }}
+        <p>{{ form.submit(class_="btn btn-primary") }}</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= TOGGLE BUTTON ================= -->
+<div class="toggle-container">
+  <button id="toggleGoals" class="btn toggle-btn">Show All Goals</button>
+</div>
+
+<!-- ================= GOAL LISTS ================= -->
+<section class="goals">
+
+  <!-- === Today's Goals Section (visible by default) === -->
+  <div id="todaySection">
+    <h3>Today's Goals</h3>
+    {% if goals %}
+      <div id="todayGoals" class="goal-grid">
+        {% for goal in goals %}
+          <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}">
+            <div class="goal-header">
+              <h4>{{ goal.title }}</h4>
+              <span class="badge">{{ goal.repeat_type|capitalize }}</span>
+            </div>
+
+            <p class="desc">{{ goal.description or '' }}</p>
+            <div class="meta">
+              <span class="category">{{ goal.category }}</span>
+              {% if goal.target_day %}
+                {% if goal.repeat_type == "monthly" %}
+                  <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                {% else %}
+                  <span class="target">🗓 {{ goal.target_day }}</span>
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <div class="actions">
+              {% if not goal.is_completed %}
+                <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
+              {% else %}
+                <span class="completed-text">✅ Completed</span>
+              {% endif %}
+              <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No goals scheduled for today 🎉</p>
+    {% endif %}
+  </div>
+
+  <!-- === All Goals Section (hidden initially) === -->
+  <div id="allSection" class="hidden">
+    <h3>All Upcoming Goals</h3>
+    {% if all_goals %}
+      <div id="allGoals" class="goal-grid">
+        {% for goal in all_goals %}
+          <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}">
+            <div class="goal-header">
+              <h4>{{ goal.title }}</h4>
+              <span class="badge">{{ goal.repeat_type|capitalize }}</span>
+            </div>
+
+            <p class="desc">{{ goal.description or '' }}</p>
+            <div class="meta">
+              <span class="category">{{ goal.category }}</span>
+              {% if goal.target_day %}
+                {% if goal.repeat_type == "monthly" %}
+                  <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                {% else %}
+                  <span class="target">🗓 {{ goal.target_day }}</span>
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <div class="actions">
+              {% if not goal.is_completed %}
+                <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
+              {% else %}
+                <span class="completed-text">✅ Completed</span>
+              {% endif %}
+              <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No goals found yet. Add some to get started!</p>
+    {% endif %}
+  </div>
+
+</section>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  /* === Target Date Field Logic === */
+  const repeatSelect = document.getElementById("repeat_type");
+  const targetContainer = document.getElementById("target-day-field");
+
+  function updateTargetField() {
+    if (!repeatSelect || !targetContainer) return;
+    const type = repeatSelect.value;
+    let html = "";
+
+    // Hide both label + field for daily or one-time goals
+    if (type === "daily" || type === "none") {
+      targetContainer.innerHTML = "";
+      return;
+    }
+
+    // Weekly goals → dropdown
+    if (type === "weekly") {
+      html = `
+        <label>Target Day</label>
+        <select name="target_day" id="target_day" class="weekday-select">
+          <option value="">Select a day</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+          <option value="Sunday">Sunday</option>
+        </select>`;
+    }
+
+    // Monthly goals → calendar picker
+    else if (type === "monthly") {
+      html = `
+        <label>Target Date</label>
+        <input type="date" name="target_day" id="target_day"
+               class="date-input"
+               placeholder="Select day of month">`;
+    }
+
+    targetContainer.innerHTML = html;
+  }
+
+  if (repeatSelect) {
+    repeatSelect.addEventListener("change", updateTargetField);
+    updateTargetField(); // initialize on load
+  }
+
+  /* === Toggle Button Logic === */
+  const toggleBtn = document.getElementById("toggleGoals");
+  const todaySection = document.getElementById("todaySection");
+  const allSection = document.getElementById("allSection");
+
+  if (toggleBtn && todaySection && allSection) {
+    let showingAll = false;
+    allSection.classList.add("hidden");
+    todaySection.classList.remove("hidden");
+    toggleBtn.textContent = "Show All Goals";
+
+    toggleBtn.addEventListener("click", () => {
+      showingAll = !showingAll;
+
+      if (showingAll) {
+        allSection.classList.remove("hidden");
+        todaySection.classList.add("hidden");
+        toggleBtn.textContent = "Show Today's Goals";
+      } else {
+        todaySection.classList.remove("hidden");
+        allSection.classList.add("hidden");
+        toggleBtn.textContent = "Show All Goals";
+      }
+    });
+  }
+
+  /* === Modal Logic (Add Goal Form Popup) === */
+  const openModalBtn = document.getElementById("openGoalModal");
+  const closeModalBtn = document.getElementById("closeGoalModal");
+  const modal = document.getElementById("goalModal");
+
+  if (openModalBtn && modal) {
+    // Open modal
+    openModalBtn.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+    });
+
+    // Close modal
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+      });
+    }
+
+    // Close modal when clicking outside content
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.add("hidden");
+      }
+    });
+  }
+
+});
+</script>
+{% endblock %}

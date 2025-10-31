@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+  <section style="text-align:center; margin-top:2rem;">
+    <h2>Welcome to Focus App</h2>
+    <p>Track your goals, stay accountable, and focus on what matters most.</p>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Get Started</a>
+  </section>
+{% endblock %}

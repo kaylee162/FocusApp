@@ -1,0 +1,385 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+}
+
+.navbar .brand {
+  color: #ffd43b;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.navbar .nav-right a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+.navbar .btn:hover {
+  background: #444;
+}
+
+.navbar .btn-primary {
+  background: #ffd43b;
+  color: #222;
+  font-weight: 600;
+}
+
+.navbar .btn-primary:hover {
+  background: #ffce00;
+}
+
+.welcome {
+  margin-right: 0.8rem;
+  font-size: 0.95rem;
+  color: #ddd;
+}
+
+/* Flash Messages */
+.flash-container {
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.flash {
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.flash.success { background: #d1e7dd; color: #0f5132; }
+.flash.info { background: #cff4fc; color: #055160; }
+.flash.warning { background: #fff3cd; color: #664d03; }
+.flash.danger { background: #f8d7da; color: #842029; }
+
+/* Main Content */
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+/* Dashboard */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.btn-primary {
+  background: #ffd43b;
+  color: #222;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.add-goal {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.goal-list {
+  list-style: none;
+  padding: 0;
+}
+
+.goal-list li {
+  background: #fff;
+  margin-bottom: 0.8rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.goal-list li.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.goal-list .btn {
+  text-decoration: none;
+  margin-right: 0.5rem;
+  background: #eee;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  color: #333;
+}
+
+.goal-list .btn:hover {
+  background: #ddd;
+}
+
+.goal-list .btn.danger {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.add-goal select, .add-goal input[type=text], .add-goal textarea {
+  width: 100%;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 0.8rem;
+}
+
+/* ===== Goal Form ===== */
+.goal-form {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.goal-form input, .goal-form select, .goal-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* ===== Goal Cards ===== */
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+  gap: 1.2rem;
+}
+.goal-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  position: relative;
+  border-top: 4px solid #ffd43b;
+}
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.goal-header h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.badge {
+  background: #ffd43b;
+  color: #222;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.desc { margin: 0.5rem 0; font-size: 0.9rem; color: #555; }
+.meta { font-size: 0.85rem; color: #777; display:flex; gap:0.8rem; }
+.actions { margin-top: 0.8rem; }
+.actions .btn {
+  background: #eee;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-right: 0.5rem;
+}
+.actions .btn:hover { background: #ddd; }
+.actions .btn.danger {
+  background: #f8d7da; color: #842029;
+}
+
+/* ===== Category Colors ===== */
+.goal-card.health { border-top-color: #4CAF50; }
+.goal-card.study { border-top-color: #007bff; }
+.goal-card.work { border-top-color: #f39c12; }
+.goal-card.personal { border-top-color: #9b59b6; }
+.goal-card.finance { border-top-color: #16a085; }
+.goal-card.other { border-top-color: #95a5a6; }
+
+/* === Progress Summary === */
+.goal-summary {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.progress-container {
+  background: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 14px;
+  margin: 0.6rem 0;
+  width: 100%;
+  position: relative;
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  height: 100%;
+  width: var(--progress, 0%);
+  transition: width 0.5s ease;
+  border-radius: 8px 0 0 8px;
+}
+
+
+/* === Completed Goals === */
+.goal-card.completed {
+  background: #e8f5e9;
+  border-top-color: #4CAF50 !important;
+  color: #2e7d32;
+}
+.goal-card.completed .desc,
+.goal-card.completed .meta {
+  color: #388e3c;
+}
+.completed-text {
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.target {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+}
+
+.toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.toggle-btn {
+  background: #ffd43b;
+  color: #222;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.toggle-btn:hover {
+  background: #ffce00;
+}
+
+.hidden {
+  display: none;
+}
+
+.celebrate {
+  color: #388e3c;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* ===== Add Goal Button ===== */
+.add-goal-btn {
+  background: #ffd43b;
+  color: #222;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.4rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.add-goal-btn:hover {
+  background: #ffce00;
+}
+
+/* ===== Modal Overlay ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal.hidden {
+  display: none;
+}
+
+/* ===== Modal Content ===== */
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  padding: 1.8rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Close Button (×) */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #888;
+  transition: 0.2s;
+}
+.close-btn:hover {
+  color: #333;
+}
+
+/* Smooth popup animation */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(-15px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+#allGoals {
+  margin-top: 2rem;
+}
