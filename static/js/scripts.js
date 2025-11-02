@@ -388,3 +388,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+/* === Weekly Progress Chart === */
+async function loadWeeklyProgress() {
+  const ctx = document.getElementById("progressChart");
+  if (!ctx) return;
+
+  const res = await fetch("/api/progress_data");
+  const data = await res.json();
+
+  const labels = data.map(d => d.date);
+  const counts = data.map(d => d.count);
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Goals Completed",
+        data: counts,
+        backgroundColor: "#3b82f6",
+        borderRadius: 8
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        title: { display: false }
+      }
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadWeeklyProgress);

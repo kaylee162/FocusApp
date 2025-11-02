@@ -7,6 +7,7 @@
   --accent: #fbbf24;
   --accent-hover: #f59e0b;
   --success: #10b981;
+  --sucesss-light: #d1fae5;
   --danger: #ef4444;
   --danger-light: #fee2e2;
   
@@ -200,7 +201,7 @@ h3 {
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: var(--primary) !important;
   color: white;
 }
 
@@ -432,6 +433,23 @@ h3 {
 }
 
 /* ===================================
+   WEEKY PROGRESS CHART
+   =================================== */
+.weekly-progress {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  max-width: 100%;  
+  margin-left: auto;        /* center horizontally */
+  margin-right: auto;
+}
+
+
+
+/* ===================================
    ADD GOAL SECTION
    =================================== */
 .add-goal {
@@ -459,6 +477,27 @@ h3 {
 
 .add-goal-btn:hover {
   background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-complete {
+  background: var(--sucesss-light); /*here*/
+  color: var(--success);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+.btn-complete:hover {
+  background: var(--success);
+  color: white;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }

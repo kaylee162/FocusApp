@@ -12,8 +12,8 @@ from datetime import datetime, timedelta, date
 from flask import render_template, redirect, url_for, flash
 from models.task import Task
 from models.priority import PriorityGoal
-
-
+from flask import jsonify
+from zoneinfo import ZoneInfo
 
 @main_bp.route("/")
 def index():
@@ -29,7 +29,13 @@ def dashboard():
     form = GoalForm()
     reset_goals_if_needed()
 
-    # --- Load all goals for this user ---
+    # --- Time setup (use Eastern Time)
+    eastern = ZoneInfo("America/New_York")
+    today = datetime.now(eastern).date()
+    weekday_name = today.strftime("%A")
+    day_of_month = today.day
+
+    # --- Load all goals fresh from DB ---
     all_goals = Goal.query.filter_by(user_id=current_user.id).all()
 
     # --- Delete one-time completed goals ---
@@ -37,10 +43,6 @@ def dashboard():
         if g.repeat_type == "none" and g.is_completed:
             db.session.delete(g)
     db.session.commit()
-
-    today = datetime.utcnow().date()
-    weekday_name = today.strftime("%A")
-    day_of_month = today.day
 
     # --- Identify today's goals ---
     today_goals_all = []
@@ -64,23 +66,19 @@ def dashboard():
     completed_today = len([g for g in today_goals_all if g.is_completed])
     percent_today = (completed_today / total_today * 100) if total_today > 0 else 0
 
-    # --- Filter uncompleted goals for dashboard view ---
+    # --- Show only active (not completed) goals in today's section ---
     today_goals_uncompleted = [g for g in today_goals_all if not g.is_completed]
 
-    # --- Sort all goals for "Show All" view ---
+    # --- Sort all goals by next due date ---
     def next_due_date(goal):
-        """Estimate the next due date for sorting."""
-        # Daily → today
         if goal.repeat_type == "daily":
             return today
-        # Weekly → next occurrence of the weekday
         if goal.repeat_type == "weekly" and goal.target_day:
             weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             today_idx = weekdays.index(weekday_name)
             target_idx = weekdays.index(goal.target_day)
             delta_days = (target_idx - today_idx) % 7
             return today + timedelta(days=delta_days)
-        # Monthly → next date with that day number
         if goal.repeat_type == "monthly" and goal.target_day:
             try:
                 goal_day = int(goal.target_day.split("-")[-1])
@@ -92,10 +90,8 @@ def dashboard():
                 next_month = today.month + 1 if today.month < 12 else 1
                 next_year = today.year if today.month < 12 else today.year + 1
                 return datetime(next_year, next_month, min(goal_day, 28)).date()
-        # One-time goals → today
         return today
 
-    # Sort by next due date
     all_goals_sorted = sorted(all_goals, key=next_due_date)
 
     # --- Handle adding a new goal ---
@@ -113,22 +109,19 @@ def dashboard():
         flash("Goal added successfully!", "success")
         return redirect(url_for("main.dashboard"))
 
-    # --- Load today's tasks for the Mini Daily Planner ---
-    today_tasks = Task.query.filter_by(user_id=current_user.id, date=date.today()).all()
-
-    # after loading today_goals_uncompleted:
+    # --- Load tasks and priorities ---
+    today_tasks = Task.query.filter_by(user_id=current_user.id, date=today).all()
     priority_goals = (
         db.session.query(Goal)
         .join(PriorityGoal, PriorityGoal.goal_id == Goal.id)
         .filter(
             PriorityGoal.user_id == current_user.id,
-            PriorityGoal.date == date.today()
+            PriorityGoal.date == today
         )
         .all()
     )
 
-
-    # --- Render dashboard with goals + tasks ---
+    # --- Render the dashboard ---
     return render_template(
         "dashboard.html",
         user=current_user,
@@ -138,9 +131,10 @@ def dashboard():
         total_today=total_today,
         completed_today=completed_today,
         percent_today=percent_today,
-        tasks=today_tasks, 
+        tasks=today_tasks,
         priorities=priority_goals
     )
+
 
 
 @main_bp.route("/goal/<int:goal_id>/complete")
@@ -188,29 +182,57 @@ def delete_goal(goal_id):
     return redirect(url_for("main.dashboard"))
 
 def reset_goals_if_needed():
-    today = datetime.utcnow().date()
+    eastern = ZoneInfo("America/New_York")
+    today = datetime.now(eastern).date()
     goals = Goal.query.all()
 
     for goal in goals:
-        # Skip if already refreshed today
-        if goal.last_reset == today:
+        # Convert datetime to date safely if needed
+        last_reset_date = (
+            goal.last_reset.date() if goal.last_reset else None
+        )
+
+        # Skip if already reset today
+        if last_reset_date == today:
             continue
 
-        # Daily goals reset every day
+        # --- Daily goals ---
         if goal.repeat_type == "daily":
             goal.is_completed = False
-            goal.last_reset = today
+            goal.last_reset = datetime.now(eastern)
 
-        # Weekly goals reset on the target weekday
+        # --- Weekly goals ---
         elif goal.repeat_type == "weekly":
             if goal.target_day and goal.target_day.lower() == today.strftime("%A").lower():
                 goal.is_completed = False
-                goal.last_reset = today
+                goal.last_reset = datetime.now(eastern)
 
-        # Monthly goals reset on the target day of month
+        # --- Monthly goals ---
         elif goal.repeat_type == "monthly":
-            if goal.target_day and goal.target_day.isdigit() and int(goal.target_day) == today.day:
-                goal.is_completed = False
-                goal.last_reset = today
+            try:
+                if goal.target_day and int(goal.target_day) == today.day:
+                    goal.is_completed = False
+                    goal.last_reset = datetime.now(eastern)
+            except ValueError:
+                pass
 
     db.session.commit()
+
+@main_bp.route("/api/progress_data")
+@login_required
+def progress_data():
+    today = date.today()
+    data = []
+
+    for i in range(6, -1, -1):  # past 7 days
+        day = today - timedelta(days=i)
+        # Example rule: a goal counts if completed that day (is_completed True and created before/at day)
+        count = Goal.query.filter(
+            Goal.user_id == current_user.id,
+            Goal.is_completed == True,
+            Goal.updated_at >= day,
+            Goal.updated_at < day + timedelta(days=1)
+        ).count() if hasattr(Goal, "updated_at") else 0
+        data.append({"date": day.strftime("%a"), "count": count})
+
+    return jsonify(data)
