@@ -22,14 +22,18 @@ def create_app():
     # --- Register blueprints ---
     from routes.main import main_bp
     from routes.auth import auth_bp
+    from routes.tasks import tasks_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(tasks_bp)
 
     # --- Database setup ---
     with app.app_context():
         from models.user import User
         from models.goal import Goal
+        from models.task import Task 
+        from models.priority import PriorityGoal
         db.create_all()
 
     return app

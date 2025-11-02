@@ -1,8 +1,50 @@
 {% extends "base.html" %}
+{% block title %}Welcome to Focus App{% endblock %}
 {% block content %}
-  <section style="text-align:center; margin-top:2rem;">
-    <h2>Welcome to Focus App</h2>
-    <p>Track your goals, stay accountable, and focus on what matters most.</p>
-    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Get Started</a>
+
+<main class="landing-page">
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Focus on What Matters</h1>
+        <p class="subtitle">Track your goals, manage your time, and build better habits — all in one place.</p>
+      </div>
+      <div class="hero-image">
+        <img src="{{ url_for('static', filename='img/focus_illustration.png') }}" alt="Focus Illustration">
+      </div>
+      <a href="{{ url_for('auth.signup') }}" class="hero-btn">Get Started Free</a>
+    </div>
   </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features">
+    <h2>Why Focus App?</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <img src="{{ url_for('static', filename='img/goals.png') }}" alt="Goal Tracking">
+        <h3>Goal Tracking</h3>
+        <p>Set goals, monitor progress, and celebrate milestones.</p>
+      </div>
+      <div class="feature">
+        <img src="{{ url_for('static', filename='img/timer.png') }}" alt="Focus Timer">
+        <h3>Focus Timer</h3>
+        <p>Stay on task with built-in Pomodoro timers.</p>
+      </div>
+      <div class="feature">
+        <img src="{{ url_for('static', filename='img/schedule.png') }}" alt="Daily Planner">
+        <h3>Daily Planner</h3>
+        <p>Organize your day with an integrated calendar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta">
+    <h2>Build consistency, one day at a time.</h2>
+    <p>Join hundreds of users creating structure and focus.</p>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Create Your Free Account</a>
+  </section>
+</main>
+
 {% endblock %}
