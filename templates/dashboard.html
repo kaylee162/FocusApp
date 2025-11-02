@@ -5,6 +5,32 @@
 <h2>Hello, {{ user.username }} 👋</h2>
 <p>Welcome back to your Focus Dashboard!</p>
 
+<!-- ================= FOCUS TIMER ================= -->
+<section class="focus-timer">
+  <h3>Focus Timer</h3>
+
+  <div class="timer-controls">
+    <div class="timer-display" id="timerDisplay">25:00</div>
+
+    <input type="range" id="timeSlider" min="0" max="120" step="5" value="25">
+    <p>⏳ Duration: <span id="timeValue">25</span> minutes</p>
+
+    <div class="timer-buttons">
+      <button id="startTimer" class="btn">Start</button>
+      <button id="resetTimer" class="btn danger">Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FULLSCREEN TIMER MODAL ================= -->
+<div id="focusModal" class="focus-modal hidden">
+  <div class="focus-content">
+    <h2>Focus Mode</h2>
+    <div id="focusCountdown" class="focus-countdown">25:00</div>
+    <button id="exitFocus" class="btn danger">Exit Focus Mode</button>
+  </div>
+</div>
+
 <!-- ================= PROGRESS SUMMARY ================= -->
 <section class="goal-summary">
   <h3>Your Progress Today</h3>
@@ -19,7 +45,6 @@
   {% endif %}
 
 </section>
-
 
 <!-- ================= ADD GOAL BUTTON + MODAL ================= -->
 <section class="add-goal">
@@ -64,196 +89,129 @@
   <button id="toggleGoals" class="btn toggle-btn">Show All Goals</button>
 </div>
 
-<!-- ================= GOAL LISTS ================= -->
-<section class="goals">
+<!-- ================= GOALS + DAILY PRIORITIES ================= -->
+<section class="dashboard-grid">
 
-  <!-- === Today's Goals Section (visible by default) === -->
-  <div id="todaySection">
-    <h3>Today's Goals</h3>
-    {% if goals %}
-      <div id="todayGoals" class="goal-grid">
-        {% for goal in goals %}
-          <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}">
-            <div class="goal-header">
-              <h4>{{ goal.title }}</h4>
-              <span class="badge">{{ goal.repeat_type|capitalize }}</span>
-            </div>
+  <!-- === Goals Column === -->
+  <div class="goals-column">
 
-            <p class="desc">{{ goal.description or '' }}</p>
-            <div class="meta">
-              <span class="category">{{ goal.category }}</span>
-              {% if goal.target_day %}
-                {% if goal.repeat_type == "monthly" %}
-                  <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
-                {% else %}
-                  <span class="target">🗓 {{ goal.target_day }}</span>
+    <!-- === Today's Goals === -->
+    <div id="todaySection" class="goal-section today-section">
+      <h3>Today's Goals</h3>
+      {% if goals %}
+        <div id="todayGoals" class="goal-grid">
+          {% for goal in goals %}
+            <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
+                 data-goal-id="{{ goal.id }}" draggable="true">
+              <div class="goal-header">
+                <h4>{{ goal.title }}</h4>
+                <span class="badge 
+                  {% if goal.repeat_type == 'none' %}badge-once
+                  {% elif goal.repeat_type == 'daily' %}badge-daily
+                  {% elif goal.repeat_type == 'weekly' %}badge-weekly
+                  {% elif goal.repeat_type == 'monthly' %}badge-monthly
+                  {% endif %}">
+                  {{ goal.repeat_type|capitalize }}
+                </span>
+              </div>
+
+              <p class="desc">{{ goal.description or '' }}</p>
+
+              <div class="meta">
+                <span class="category">{{ goal.category }}</span>
+                {% if goal.target_day %}
+                  {% if goal.repeat_type == "monthly" %}
+                    <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                  {% else %}
+                    <span class="target">🗓 {{ goal.target_day }}</span>
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            </div>
+              </div>
 
-            <div class="actions">
-              {% if not goal.is_completed %}
-                <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
-              {% else %}
-                <span class="completed-text">✅ Completed</span>
-              {% endif %}
-              <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+              <div class="actions">
+                {% if not goal.is_completed %}
+                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
+                {% else %}
+                  <span class="completed-text">✅ Completed</span>
+                {% endif %}
+                <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+              </div>
             </div>
-          </div>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p>No goals scheduled for today 🎉</p>
-    {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No goals scheduled for today 🎉</p>
+      {% endif %}
+    </div>
+
+    <!-- === All Goals (Hidden Initially) === -->
+    <div id="allSection" class="goal-section upcoming-section hidden">
+      <h3>All Upcoming Goals</h3>
+      {% if all_goals %}
+        <div id="allGoals" class="goal-grid">
+          {% for goal in all_goals %}
+            <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
+                 data-goal-id="{{ goal.id }}" draggable="true">
+              <div class="goal-header">
+                <h4>{{ goal.title }}</h4>
+                <span class="badge">{{ goal.repeat_type|capitalize }}</span>
+              </div>
+
+              <p class="desc">{{ goal.description or '' }}</p>
+
+              <div class="meta">
+                <span class="category">{{ goal.category }}</span>
+                {% if goal.target_day %}
+                  {% if goal.repeat_type == "monthly" %}
+                    <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                  {% else %}
+                    <span class="target">🗓 {{ goal.target_day }}</span>
+                  {% endif %}
+                {% endif %}
+              </div>
+
+              <div class="actions">
+                {% if not goal.is_completed %}
+                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
+                {% else %}
+                  <span class="completed-text">✅ Completed</span>
+                {% endif %}
+                <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No goals found yet. Add some to get started!</p>
+      {% endif %}
+    </div>
   </div>
 
-  <!-- === All Goals Section (hidden initially) === -->
-  <div id="allSection" class="hidden">
-    <h3>All Upcoming Goals</h3>
-    {% if all_goals %}
-      <div id="allGoals" class="goal-grid">
-        {% for goal in all_goals %}
-          <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}">
-            <div class="goal-header">
-              <h4>{{ goal.title }}</h4>
-              <span class="badge">{{ goal.repeat_type|capitalize }}</span>
-            </div>
+  <!-- === Daily Priority Box === -->
+  <div class="planner-column">
+    <section class="daily-planner card" id="priorityBox">
+      <h3>⭐ Priorities</h3>
+      <p class="hint">Drag a goal here to make it a priority</p>
 
-            <p class="desc">{{ goal.description or '' }}</p>
-            <div class="meta">
-              <span class="category">{{ goal.category }}</span>
-              {% if goal.target_day %}
-                {% if goal.repeat_type == "monthly" %}
-                  <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
-                {% else %}
-                  <span class="target">🗓 {{ goal.target_day }}</span>
-                {% endif %}
-              {% endif %}
-            </div>
-
+      <ul id="priority-list" class="task-list">
+        {% for p in priorities %}
+          <li class="task-item" data-goal-id="{{ p.id }}" draggable="true">
+            <span class="task-title">{{ p.title }}</span>
             <div class="actions">
-              {% if not goal.is_completed %}
-                <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
-              {% else %}
-                <span class="completed-text">✅ Completed</span>
-              {% endif %}
-              <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+              <button class="check-btn" data-action="complete" title="Mark Complete">✓</button>
+              <button class="remove-btn" data-action="remove" title="Remove from Priorities">×</button>
             </div>
-          </div>
+          </li>
+        {% else %}
+          <li class="empty">No priorities yet. Drag a goal to add one!</li>
         {% endfor %}
-      </div>
-    {% else %}
-      <p>No goals found yet. Add some to get started!</p>
-    {% endif %}
+      </ul>
+    </section>
   </div>
 
 </section>
 
 
 <!-- ================= JAVASCRIPT ================= -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-
-  /* === Target Date Field Logic === */
-  const repeatSelect = document.getElementById("repeat_type");
-  const targetContainer = document.getElementById("target-day-field");
-
-  function updateTargetField() {
-    if (!repeatSelect || !targetContainer) return;
-    const type = repeatSelect.value;
-    let html = "";
-
-    // Hide both label + field for daily or one-time goals
-    if (type === "daily" || type === "none") {
-      targetContainer.innerHTML = "";
-      return;
-    }
-
-    // Weekly goals → dropdown
-    if (type === "weekly") {
-      html = `
-        <label>Target Day</label>
-        <select name="target_day" id="target_day" class="weekday-select">
-          <option value="">Select a day</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-          <option value="Sunday">Sunday</option>
-        </select>`;
-    }
-
-    // Monthly goals → calendar picker
-    else if (type === "monthly") {
-      html = `
-        <label>Target Date</label>
-        <input type="date" name="target_day" id="target_day"
-               class="date-input"
-               placeholder="Select day of month">`;
-    }
-
-    targetContainer.innerHTML = html;
-  }
-
-  if (repeatSelect) {
-    repeatSelect.addEventListener("change", updateTargetField);
-    updateTargetField(); // initialize on load
-  }
-
-  /* === Toggle Button Logic === */
-  const toggleBtn = document.getElementById("toggleGoals");
-  const todaySection = document.getElementById("todaySection");
-  const allSection = document.getElementById("allSection");
-
-  if (toggleBtn && todaySection && allSection) {
-    let showingAll = false;
-    allSection.classList.add("hidden");
-    todaySection.classList.remove("hidden");
-    toggleBtn.textContent = "Show All Goals";
-
-    toggleBtn.addEventListener("click", () => {
-      showingAll = !showingAll;
-
-      if (showingAll) {
-        allSection.classList.remove("hidden");
-        todaySection.classList.add("hidden");
-        toggleBtn.textContent = "Show Today's Goals";
-      } else {
-        todaySection.classList.remove("hidden");
-        allSection.classList.add("hidden");
-        toggleBtn.textContent = "Show All Goals";
-      }
-    });
-  }
-
-  /* === Modal Logic (Add Goal Form Popup) === */
-  const openModalBtn = document.getElementById("openGoalModal");
-  const closeModalBtn = document.getElementById("closeGoalModal");
-  const modal = document.getElementById("goalModal");
-
-  if (openModalBtn && modal) {
-    // Open modal
-    openModalBtn.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-    });
-
-    // Close modal
-    if (closeModalBtn) {
-      closeModalBtn.addEventListener("click", () => {
-        modal.classList.add("hidden");
-      });
-    }
-
-    // Close modal when clicking outside content
-    window.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.classList.add("hidden");
-      }
-    });
-  }
-
-});
-</script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 {% endblock %}

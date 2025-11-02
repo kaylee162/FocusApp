@@ -1,14 +1,63 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
 {% block content %}
-  <h2>Create an Account</h2>
-  <form method="POST">
-    {{ form.hidden_tag() }}
-    <p>{{ form.username.label }}<br>{{ form.username() }}</p>
-    <p>{{ form.email.label }}<br>{{ form.email() }}</p>
-    <p>{{ form.password.label }}<br>{{ form.password() }}</p>
-    <p>{{ form.confirm_password.label }}<br>{{ form.confirm_password() }}</p>
-    <p>{{ form.submit() }}</p>
-  </form>
-  <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>.</p>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Create an Account</h2>
+    <p class="subtitle">Start your journey to better focus today</p>
+
+    <!-- FLASHED MESSAGES (e.g., username exists, general errors) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <form method="POST" class="auth-form">
+      {{ form.hidden_tag() }}
+      
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(placeholder="Choose a username") }}
+        {% for error in form.username.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </div>
+      
+      <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email(placeholder="your.email@example.com") }}
+        {% for error in form.email.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </div>
+      
+      <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(placeholder="Create a strong password") }}
+        {% for error in form.password.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </div>
+      
+      <div class="form-group">
+        {{ form.confirm_password.label }}
+        {{ form.confirm_password(placeholder="Confirm your password") }}
+        {% for error in form.confirm_password.errors %}
+          <small class="error">{{ error }}</small>
+        {% endfor %}
+      </div>
+      
+      {{ form.submit(class="submit-btn") }}
+    </form>
+    
+    <div class="auth-footer">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

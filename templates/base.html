@@ -4,20 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Focus App{% endblock %}</title>
+
+  <!-- STYLES -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+  <!-- GOOGLE FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-left">
-        <a href="{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}" class="brand">Focus App</a>
+      <a href="{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}" class="brand">Focus App</a>
     </div>
     <div class="nav-right">
       {% if current_user.is_authenticated %}
         <span class="welcome">Welcome, {{ current_user.username }}!</span>
-        <a href="{{ url_for('auth.logout') }}" class="btn logout-btn">Logout</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">Logout</a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}" class="btn">Login</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-login">Login</a>
         <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Sign Up</a>
       {% endif %}
     </div>
@@ -38,5 +48,8 @@
   <main>
     {% block content %}{% endblock %}
   </main>
+
+  <!-- GLOBAL SCRIPT -->
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

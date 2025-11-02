@@ -8,8 +8,12 @@ main_bp = Blueprint("main", __name__)
 
 from flask_login import current_user, login_required
 from flask import redirect, url_for, render_template
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from flask import render_template, redirect, url_for, flash
+from models.task import Task
+from models.priority import PriorityGoal
+
+
 
 @main_bp.route("/")
 def index():
@@ -25,10 +29,10 @@ def dashboard():
     form = GoalForm()
     reset_goals_if_needed()
 
-    # Load all goals for this user
+    # --- Load all goals for this user ---
     all_goals = Goal.query.filter_by(user_id=current_user.id).all()
 
-    # Delete one-time completed goals
+    # --- Delete one-time completed goals ---
     for g in all_goals:
         if g.repeat_type == "none" and g.is_completed:
             db.session.delete(g)
@@ -63,10 +67,10 @@ def dashboard():
     # --- Filter uncompleted goals for dashboard view ---
     today_goals_uncompleted = [g for g in today_goals_all if not g.is_completed]
 
-    # --- Sort all goals for "Show All" ---
+    # --- Sort all goals for "Show All" view ---
     def next_due_date(goal):
         """Estimate the next due date for sorting."""
-        # Daily → today (always)
+        # Daily → today
         if goal.repeat_type == "daily":
             return today
         # Weekly → next occurrence of the weekday
@@ -82,17 +86,16 @@ def dashboard():
                 goal_day = int(goal.target_day.split("-")[-1])
             except ValueError:
                 goal_day = int(goal.target_day)
-            # Same month if still ahead, else next month
             if goal_day >= day_of_month:
                 return today.replace(day=goal_day)
             else:
                 next_month = today.month + 1 if today.month < 12 else 1
                 next_year = today.year if today.month < 12 else today.year + 1
                 return datetime(next_year, next_month, min(goal_day, 28)).date()
-        # One-time goals → assume no repeat
+        # One-time goals → today
         return today
 
-    # Sort: soonest due first
+    # Sort by next due date
     all_goals_sorted = sorted(all_goals, key=next_due_date)
 
     # --- Handle adding a new goal ---
@@ -110,15 +113,33 @@ def dashboard():
         flash("Goal added successfully!", "success")
         return redirect(url_for("main.dashboard"))
 
+    # --- Load today's tasks for the Mini Daily Planner ---
+    today_tasks = Task.query.filter_by(user_id=current_user.id, date=date.today()).all()
+
+    # after loading today_goals_uncompleted:
+    priority_goals = (
+        db.session.query(Goal)
+        .join(PriorityGoal, PriorityGoal.goal_id == Goal.id)
+        .filter(
+            PriorityGoal.user_id == current_user.id,
+            PriorityGoal.date == date.today()
+        )
+        .all()
+    )
+
+
+    # --- Render dashboard with goals + tasks ---
     return render_template(
         "dashboard.html",
         user=current_user,
         form=form,
-        goals=today_goals_uncompleted,   # today's active ones
-        all_goals=all_goals_sorted,      # sorted by next due date
+        goals=today_goals_uncompleted,
+        all_goals=all_goals_sorted,
         total_today=total_today,
         completed_today=completed_today,
-        percent_today=percent_today
+        percent_today=percent_today,
+        tasks=today_tasks, 
+        priorities=priority_goals
     )
 
 
@@ -126,13 +147,33 @@ def dashboard():
 @login_required
 def complete_goal(goal_id):
     goal = Goal.query.get_or_404(goal_id)
+
+    # --- Permission check ---
     if goal.user_id != current_user.id:
         flash("You don’t have permission to modify this goal.", "danger")
         return redirect(url_for("main.dashboard"))
+
+    # --- Mark as completed ---
     goal.is_completed = True
+
+    # --- Also remove from today's priorities, if present ---
+    from models.priority import PriorityGoal
+    from datetime import date
+
+    priority = PriorityGoal.query.filter_by(
+        user_id=current_user.id,
+        goal_id=goal.id,
+        date=date.today()
+    ).first()
+
+    if priority:
+        db.session.delete(priority)
+
     db.session.commit()
+
     flash("Goal marked as completed!", "info")
     return redirect(url_for("main.dashboard"))
+
 
 @main_bp.route("/goal/<int:goal_id>/delete")
 @login_required
