@@ -46,9 +46,16 @@
 
 </section>
 
+<!-- === Weekly Progress Chart === -->
+<section class="weekly-progress card">
+  <h3>📊 Weekly Progress</h3>
+  <canvas id="progressChart" width="400" height="200"></canvas>
+</section>
+
+
 <!-- ================= ADD GOAL BUTTON + MODAL ================= -->
 <section class="add-goal">
-  <button id="openGoalModal" class="btn add-goal-btn">+ Add Goal</button>
+  <button id="openGoalModal" class="add-goal-btn">+ Add Goal</button>
 
   <!-- Modal Overlay -->
   <div id="goalModal" class="modal hidden">
@@ -130,7 +137,7 @@
 
               <div class="actions">
                 {% if not goal.is_completed %}
-                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn">Mark Complete</a>
+                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark Complete</a>
                 {% else %}
                   <span class="completed-text">✅ Completed</span>
                 {% endif %}
