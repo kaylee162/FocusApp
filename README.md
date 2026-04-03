@@ -1,25 +1,125 @@
-# 🎯 Focus App
+# Focus App
 
-**Focus App** is a full-featured productivity tracker built with **Flask** that combines goal tracking, time management, and scheduling into a single platform.  
-Users can create accounts, set personal goals, use an integrated focus timer to stay on task, and plan their day with a built-in scheduler.  
-Designed for students and professionals who want to boost focus and consistency, Focus App encourages better habits through structure and progress tracking.
+## Overview
 
-## 🔑 Key Features
+Focus App is a Flask-based web application designed to help users build habits, track goals, and stay productive. It combines a goal tracker, daily planner, and focus timer into one clean, retro-inspired interface.
 
-- **User Authentication** – Secure signup, login, and session management using Flask-Login  
-- **Goal Tracking** – Create, update, and monitor progress toward personal or academic goals  
-- **Focus Timer** – Built-in Pomodoro-style timer to improve concentration and manage work sessions  
-- **Daily Scheduler** – Plan tasks, classes, and study sessions with an interactive calendar  
-- **Progress Insights** – Visual summaries of time spent and goals achieved  
+---
 
-## 🧠 Tech Stack
+## Features
 
-- **Backend:** Flask, Python, SQLite  
-- **Frontend:** HTML, CSS, JavaScript (Bootstrap for UI)  
-- **Authentication:** Flask-Login & Werkzeug for password hashing  
+* **Goal Tracking**
 
-## 🚀 Future Improvements
+  * Create, edit, and delete goals
+  * Supports one-time, daily, weekly, and monthly goals
+  * Progress tracking with completion states
 
-- Gamified achievements for streaks and consistency  
-- Data visualization dashboard for weekly performance  
-- Mobile-friendly responsive layout  
+* **Daily Planner**
+
+  * Drag-and-drop task prioritization
+  * Mark tasks as complete or remove them
+
+* **Focus Timer**
+
+  * Adjustable countdown timer
+  * Modal-based focus mode for distraction-free sessions
+
+* **Weekly Progress**
+
+  * Visual chart showing completed goals over time
+
+* **Authentication**
+
+  * User signup, login, and logout
+  * Secure session handling
+
+---
+
+## Tech Stack
+
+* **Backend:** Flask (Python)
+* **Frontend:** HTML, CSS, JavaScript
+* **Database:** SQLite (via SQLAlchemy)
+* **Forms:** Flask-WTF
+* **Charts:** Chart.js
+
+---
+
+## Project Structure
+
+```
+focus-app/
+├── app.py
+├── models.py
+├── forms.py
+├── routes/
+│   ├── auth.py
+│   ├── main.py
+│   ├── tasks.py
+├── templates/
+├── static/
+│   ├── css/style.css
+│   ├── js/scripts.js
+│   └── images/
+```
+
+---
+
+## How It Works
+
+* Users authenticate through Flask routes and sessions
+* Goals are stored in the database and filtered per user
+* Recurring goals reset based on their frequency (daily, weekly, monthly)
+* The dashboard pulls:
+
+  * active goals
+  * completed goals
+  * prioritized tasks
+* JavaScript handles:
+
+  * drag-and-drop tasks
+  * timer behavior
+  * chart rendering
+
+---
+
+## Running the App
+
+```bash
+pip install -r requirements.txt
+flask run
+```
+
+Then open:
+
+```
+http://127.0.0.1:5000
+```
+
+---
+
+## Design Notes
+
+* Retro-inspired UI with soft colors and rounded components
+* Playful visuals (stickers, doodles, badges)
+* Focus on clarity, friendliness, and usability
+
+---
+
+## Future Improvements
+
+* Notifications / reminders
+* Streak tracking
+* Mobile optimization
+* Dark mode toggle
+
+---
+
+## Demo Talking Points
+
+* “This app combines habit tracking, planning, and focus into one system.”
+* “Recurring goals automatically reset based on frequency.”
+* “The planner uses drag-and-drop for prioritization.”
+* “The UI is designed to feel fun and motivating, not overwhelming.”
+
+---
