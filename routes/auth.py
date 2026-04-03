@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db
 from models.user import User
 from forms.auth_forms import SignUpForm, LoginForm
+from sqlalchemy.exc import IntegrityError
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -22,9 +23,10 @@ def signup():
             flash("Username already exists. Please choose another.", "error")
             return render_template("auth/signup.html", form=form)
 
-        # Basic email validation (simple check)
-        if "@" not in form.email.data:
-            flash("Please enter a valid email address.", "error")
+        # Check if email already exists
+        existing_email = User.query.filter_by(email=form.email.data).first()
+        if existing_email:
+            flash("An account with that email already exists. Please use another email or log in.", "error")
             return render_template("auth/signup.html", form=form)
 
         # Password match check
@@ -32,10 +34,20 @@ def signup():
             flash("Passwords do not match.", "error")
             return render_template("auth/signup.html", form=form)
 
-        # Create new user if all checks pass
+        # Create and save the new user
         hashed_pw = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            password=hashed_pw
+        )
         db.session.add(user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("That username or email is already in use.", "error")
+            return render_template("auth/signup.html", form=form)
         db.session.commit()
 
         flash("Account created successfully! You can now log in.", "success")

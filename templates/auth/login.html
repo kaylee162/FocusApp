@@ -3,28 +3,40 @@
 {% block content %}
 
 <div class="auth-container">
-  <div class="auth-card">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Log in to continue to your Focus Dashboard</p>
-    
-    <form method="POST" class="auth-form">
-      {{ form.hidden_tag() }}
-      
-      <div class="form-group">
-        {{ form.username.label }}
-        {{ form.username(placeholder="Enter your username") }}
+  <div class="auth-card retro-window">
+    <div class="window-bar">
+      <div class="window-dots">
+        <span></span><span></span><span></span>
       </div>
-      
-      <div class="form-group">
-        {{ form.password.label }}
-        {{ form.password(placeholder="Enter your password") }}
+      <span class="window-title">focus://login</span>
+    </div>
+
+    <div class="auth-card-inner">
+      <div class="auth-copy">
+        <span class="eyebrow">Welcome back</span>
+        <h2>Log in and pick up where you left off.</h2>
+        <p class="subtitle">Your dashboard is ready with goals, priorities, and focus sessions waiting.</p>
       </div>
-      
-      {{ form.submit(class="submit-btn") }}
-    </form>
-    
-    <div class="auth-footer">
-      Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up here</a>
+
+      <form method="POST" class="auth-form">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.username.label }}
+          {{ form.username(placeholder="Enter your username") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.password.label }}
+          {{ form.password(placeholder="Enter your password") }}
+        </div>
+
+        {{ form.submit(class="submit-btn") }}
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up here</a>
+      </div>
     </div>
   </div>
 </div>

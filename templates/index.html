@@ -2,49 +2,87 @@
 {% block title %}Welcome to Focus App{% endblock %}
 {% block content %}
 
-<main class="landing-page">
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1>Focus on What Matters</h1>
-        <p class="subtitle">Track your goals, manage your time, and build better habits — all in one place.</p>
+<div class="landing-page">
+  <section class="hero retro-window hero-window">
+    <div class="window-bar">
+      <div class="window-dots">
+        <span></span><span></span><span></span>
       </div>
-      <div class="hero-image">
-        <img src="{{ url_for('static', filename='img/focus_illustration.png') }}" alt="Focus Illustration">
+      <span class="window-title">focus://home</span>
+    </div>
+
+    <div class="hero-layout">
+      <div class="hero-copy">
+        <span class="eyebrow">Fun focus • Habit friendly • Retro bright</span>
+        <h1>Build routines that feel a little more joyful.</h1>
+        <p class="subtitle">
+          Your focus app can still be practical without feeling flat. Track goals, plan priorities,
+          and jump into focus mode inside a colorful dashboard with playful retro energy.
+        </p>
+
+        <div class="hero-actions">
+          <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Get Started</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-large">Log In</a>
+        </div>
+
+        <div class="mini-badges">
+          <span>✓ Goal tracking</span>
+          <span>✓ Focus timer</span>
+          <span>✓ Priority planning</span>
+        </div>
       </div>
-      <a href="{{ url_for('auth.signup') }}" class="hero-btn">Get Started Free</a>
+
+      <div class="hero-art">
+        <div class="hero-sticker sticker-a">focus!</div>
+        <div class="hero-sticker sticker-b">habit mode</div>
+        <div class="phone-frame">
+          <img src="{{ url_for('static', filename='img/focus_illustration.png') }}" alt="Focus App Illustration">
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- FEATURES SECTION -->
-  <section class="features">
-    <h2>Why Focus App?</h2>
+  <section class="feature-showcase">
+    <div class="section-heading">
+      <span class="eyebrow">Why it works</span>
+      <h2>A softer, friendlier workflow</h2>
+    </div>
+
     <div class="feature-grid">
-      <div class="feature">
-        <img src="{{ url_for('static', filename='img/goals.png') }}" alt="Goal Tracking">
-        <h3>Goal Tracking</h3>
-        <p>Set goals, monitor progress, and celebrate milestones.</p>
-      </div>
-      <div class="feature">
-        <img src="{{ url_for('static', filename='img/timer.png') }}" alt="Focus Timer">
-        <h3>Focus Timer</h3>
-        <p>Stay on task with built-in Pomodoro timers.</p>
-      </div>
-      <div class="feature">
-        <img src="{{ url_for('static', filename='img/schedule.png') }}" alt="Daily Planner">
-        <h3>Daily Planner</h3>
-        <p>Organize your day with an integrated calendar.</p>
-      </div>
+      <article class="feature-card retro-card peach">
+        <div class="feature-thumb">
+          <img src="{{ url_for('static', filename='img/goals.png') }}" alt="Goal Tracking">
+        </div>
+        <h3>Track goals clearly</h3>
+        <p>See what matters today, what is coming up next, and what you have already knocked out.</p>
+      </article>
+
+      <article class="feature-card retro-card blue">
+        <div class="feature-thumb">
+          <img src="{{ url_for('static', filename='img/timer.png') }}" alt="Focus Timer">
+        </div>
+        <h3>Stay locked in</h3>
+        <p>Use the built in timer for quick focus sprints with a fullscreen mode that feels intentional.</p>
+      </article>
+
+      <article class="feature-card retro-card green">
+        <div class="feature-thumb">
+          <img src="{{ url_for('static', filename='img/schedule.png') }}" alt="Daily Planner">
+        </div>
+        <h3>Prioritize with ease</h3>
+        <p>Drag goals into your priority list so the dashboard mirrors what you actually want to do today.</p>
+      </article>
     </div>
   </section>
 
-  <!-- CTA SECTION -->
-  <section class="cta">
-    <h2>Build consistency, one day at a time.</h2>
-    <p>Join hundreds of users creating structure and focus.</p>
-    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Create Your Free Account</a>
+  <section class="cta-panel retro-card lilac">
+    <div>
+      <span class="eyebrow">Ready to jump in?</span>
+      <h2>Make focus feel less like homework.</h2>
+      <p>Create an account and start building your routine in a space that feels upbeat and welcoming.</p>
+    </div>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Create Your Account</a>
   </section>
-</main>
+</div>
 
 {% endblock %}
