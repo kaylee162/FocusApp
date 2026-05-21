@@ -23,10 +23,12 @@ def create_app():
     from routes.main import main_bp
     from routes.auth import auth_bp
     from routes.tasks import tasks_bp
+    from routes.priority import priority_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(tasks_bp)
+    app.register_blueprint(priority_bp)
 
     # --- Database setup ---
     with app.app_context():
@@ -39,7 +41,9 @@ def create_app():
     return app
 
 
-# --- Run the app ---
+# --- Create app for Vercel / production ---
+app = create_app()
+
+# --- Run locally ---
 if __name__ == "__main__":
-    app = create_app()
     app.run(debug=True)
