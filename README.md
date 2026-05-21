@@ -83,20 +83,126 @@ focus-app/
 
 ---
 
-## Running the App
+## Running the App Locally
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/kaylee162/focus-app.git
+cd focus-app
+```
+
+---
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+---
+
+### 3. Activate the Virtual Environment
+
+#### Windows (PowerShell)
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+#### Windows (Command Prompt)
+
+```cmd
+venv\Scripts\activate.bat
+```
+
+#### macOS / Linux
+
+```bash
+source venv/bin/activate
+```
+
+---
+
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
-flask run
 ```
 
-Then open:
+---
 
+### 5. Run the Application
+
+```bash
+python app.py
 ```
+
+Or with Flask:
+
+```bash
+flask --app app run --debug
+```
+
+---
+
+### 6. Open the App
+
+Open your browser and go to:
+
+```txt
 http://127.0.0.1:5000
 ```
 
 ---
+
+## Future Usage
+
+After the initial setup, you only need to:
+
+```powershell
+cd your-project-folder
+.\venv\Scripts\Activate.ps1
+python app.py
+```
+
+---
+
+## Stopping the App
+
+Press:
+
+```txt
+CTRL + C
+```
+
+inside the terminal.
+
+---
+
+## Deactivating the Virtual Environment
+
+```bash
+deactivate
+```
+
+---
+
+## Notes
+
+If PowerShell blocks script execution when activating the virtual environment, run:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+Then type:
+
+```txt
+Y
+```
+
+and press Enter.
 
 ## Design Notes
 
