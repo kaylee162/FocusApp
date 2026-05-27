@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Focus App{% endblock %}</title>
+  <title>{% block title %}Sidekick{% endblock %}</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,7 @@
     <div class="nav-left">
       <a href="{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}" class="brand">
         <span class="brand-badge">✦</span>
-        <span>Focus App</span>
+        <span>Sidekick</span>
       </a>
     </div>
     <div class="nav-right">

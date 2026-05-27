@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Welcome to Focus App{% endblock %}
+{% block title %}Welcome to Sidekick{% endblock %}
 {% block content %}
 
 <div class="landing-page">
@@ -8,16 +8,16 @@
       <div class="window-dots">
         <span></span><span></span><span></span>
       </div>
-      <span class="window-title">focus://home</span>
+      <span class="window-title">sidekick://home</span>
     </div>
 
     <div class="hero-layout">
       <div class="hero-copy">
-        <span class="eyebrow">Fun focus • Habit friendly • Retro bright</span>
-        <h1>Build routines that feel a little more joyful.</h1>
+        <span class="eyebrow">Cute habits • Focus sessions • Sidekick growth</span>
+        <h1>Grow a tiny sidekick while you build better habits.</h1>
         <p class="subtitle">
-          Your focus app can still be practical without feeling flat. Track goals, plan priorities,
-          and jump into focus mode inside a colorful dashboard with playful retro energy.
+          Sidekick turns your daily goals and focus sessions into XP for a cute little companion.
+          Complete habits, collect shards, and watch your buddy evolve into new forms.
         </p>
 
         <div class="hero-actions">
@@ -26,9 +26,9 @@
         </div>
 
         <div class="mini-badges">
-          <span>✓ Goal tracking</span>
+          <span>✓ Habit tracking</span>
           <span>✓ Focus timer</span>
-          <span>✓ Priority planning</span>
+          <span>✓ Virtual pet progress</span>
         </div>
       </div>
 
@@ -45,7 +45,7 @@
   <section class="feature-showcase">
     <div class="section-heading">
       <span class="eyebrow">Why it works</span>
-      <h2>A softer, friendlier workflow</h2>
+      <h2>Tamagotchi-style productivity</h2>
     </div>
 
     <div class="feature-grid">
@@ -53,24 +53,24 @@
         <div class="feature-thumb">
           <img src="{{ url_for('static', filename='img/goals.png') }}" alt="Goal Tracking">
         </div>
-        <h3>Track goals clearly</h3>
-        <p>See what matters today, what is coming up next, and what you have already knocked out.</p>
+        <h3>Track habits clearly</h3>
+        <p>See today’s goals, tiny self-care habits, and completed wins in one cozy dashboard.</p>
       </article>
 
       <article class="feature-card retro-card blue">
         <div class="feature-thumb">
           <img src="{{ url_for('static', filename='img/timer.png') }}" alt="Focus Timer">
         </div>
-        <h3>Stay locked in</h3>
-        <p>Use the built in timer for quick focus sprints with a fullscreen mode that feels intentional.</p>
+        <h3>Focus to earn rewards</h3>
+        <p>Finish focus sprints to give your sidekick XP and shards for treats.</p>
       </article>
 
       <article class="feature-card retro-card green">
         <div class="feature-thumb">
           <img src="{{ url_for('static', filename='img/schedule.png') }}" alt="Daily Planner">
         </div>
-        <h3>Prioritize with ease</h3>
-        <p>Drag goals into your priority list so the dashboard mirrors what you actually want to do today.</p>
+        <h3>Grow your companion</h3>
+        <p>Your sidekick changes forms, celebrates streaks, and reacts when you check things off.</p>
       </article>
     </div>
   </section>
@@ -78,8 +78,8 @@
   <section class="cta-panel retro-card lilac">
     <div>
       <span class="eyebrow">Ready to jump in?</span>
-      <h2>Make focus feel less like homework.</h2>
-      <p>Create an account and start building your routine in a space that feels upbeat and welcoming.</p>
+      <h2>Make routines feel like caring for a tiny friend.</h2>
+      <p>Create an account and start turning your habits into a cozy adventure.</p>
     </div>
     <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Create Your Account</a>
   </section>

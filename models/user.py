@@ -6,6 +6,10 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    sidekick_name = db.Column(db.String(24), nullable=True)
+    sidekick_character = db.Column(db.String(20), nullable=True)
+    habit_categories = db.Column(db.String(255), nullable=True)
+    onboarding_complete = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return f"<User {self.username}>"
