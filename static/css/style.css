@@ -1098,3 +1098,775 @@ p {
     overflow: visible;
   }
 }
+
+/* =========================================================
+   SIDEKICK + HABIT TRACKER
+   Dashboard companion system inspired by cozy virtual pet apps.
+   ========================================================= */
+
+.sidekick-hub {
+  margin: 26px 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff9ef 0%, #f4e8bd 100%);
+}
+
+.sidekick-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.15fr) minmax(260px, 0.85fr);
+  gap: 22px;
+  padding: 22px;
+}
+
+.sidekick-scene {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 32px;
+  border: 3px solid var(--ink);
+  display: grid;
+  place-items: center;
+  background-image: url("../img/backgrounds/sidekick-bg.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.sidekick-speech {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  max-width: 260px;
+  padding: 14px 18px;
+  border-radius: 24px 24px 24px 8px;
+  background: rgba(255, 249, 239, 0.95);
+  border: 3px solid rgba(60, 42, 40, 0.18);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+.sparkle-field span {
+  position: absolute;
+  color: #ffe777;
+  font-size: 1.4rem;
+  animation: sparkle-pop 0.9s ease-out forwards;
+}
+
+.sidekick-panel {
+  align-self: stretch;
+  padding: 8px 4px;
+}
+
+.sidekick-panel h3 {
+  margin: 12px 0 6px;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.sidekick-note,
+.habit-board-header p {
+  color: var(--ink-soft);
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+}
+
+.sidekick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.sidekick-stats div {
+  padding: 14px 10px;
+  border: var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidekick-stats strong {
+  display: block;
+  font-size: 1.45rem;
+}
+
+.sidekick-stats span {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.sidekick-meter span {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.meter-track {
+  height: 18px;
+  border: var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+}
+
+.meter-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8bcf7b, #ffe777, #f7a7d8);
+  transition: width 300ms ease;
+}
+
+.sidekick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.habit-board {
+  margin: 26px 0;
+}
+
+.habit-board-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.mini-habit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(130px, 1fr));
+  gap: 14px;
+}
+
+.mini-habit {
+  min-height: 132px;
+  padding: 16px 12px;
+  border: var(--border);
+  border-radius: 24px;
+  background: #fff9ef;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--transition), filter var(--transition), background var(--transition);
+}
+
+.mini-habit span,
+.mini-habit strong,
+.mini-habit small {
+  display: block;
+}
+
+.mini-habit span {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.mini-habit strong {
+  font-size: 1rem;
+}
+
+.mini-habit small {
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.mini-habit.done {
+  background: var(--success-light);
+  filter: saturate(0.9);
+}
+
+.mini-habit.done::after {
+  content: "Done ✓";
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--success);
+  color: white;
+  font-weight: 700;
+}
+
+@keyframes sparkle-pop {
+  0% { opacity: 0; transform: scale(0.4) translateY(8px); }
+  55% { opacity: 1; transform: scale(1.1) translateY(-10px); }
+  100% { opacity: 0; transform: scale(0.7) translateY(-34px); }
+}
+
+@media (max-width: 850px) {
+  .sidekick-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mini-habit-grid {
+    grid-template-columns: repeat(2, minmax(130px, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .habit-board-header,
+  .sidekick-actions {
+    flex-direction: column;
+  }
+
+  .mini-habit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sidekick-speech {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+  }
+}
+
+/* =========================================================
+   SIDEKICK CHARACTER PICKER + PNG AVATAR OVERRIDES
+   Put character files in: static/img/sidekicks/dino.png, fox.png, panda.png, cow.png
+   ========================================================= */
+.sidekick-avatar {
+  position: relative;
+  width: 330px;
+  height: 345px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  animation: none;
+  filter: none;
+}
+
+.sidekick-avatar img {
+  position: relative;
+  z-index: 1;
+  width: min(260px, 95%);
+  height: min(260px, 95%);
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sidekick-accessory {
+  z-index: 3;
+  top: 2px;
+}
+
+.sidekick-shadow {
+  display: none;
+}
+
+.sidekick-name-modal {
+  width: min(520px, 100%);
+}
+
+.modal-inner {
+  padding: 22px;
+}
+
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sidekick-name-input,
+.onboarding-sidekick input {
+  width: 100%;
+  padding: 13px 15px;
+  border: var(--border);
+  border-radius: 16px;
+  background: #fffdf7;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  box-shadow: inset 0 2px 0 rgba(60, 42, 40, 0.06);
+}
+
+.onboarding-sidekick {
+  margin: 4px 0 18px;
+  padding: 18px;
+  border: 3px solid rgba(60, 42, 40, 0.14);
+  border-radius: 26px;
+  background: linear-gradient(135deg, #fff9ef, #f8edca);
+}
+
+.character-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.character-option {
+  min-height: 138px;
+  padding: 10px;
+  border: var(--border);
+  border-radius: 22px;
+  background: #fffdf7;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.character-option:hover,
+.character-option.selected {
+  transform: translateY(-3px) rotate(-0.5deg);
+  background: #fff1b8;
+  box-shadow: var(--shadow);
+}
+
+.character-option img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 8px;
+}
+
+.character-option span {
+  display: block;
+  font-weight: 800;
+}
+
+@media (max-width: 620px) {
+  .character-picker {
+    grid-template-columns: repeat(2, minmax(110px, 1fr));
+  }
+}
+
+/* =========================================================
+   ONBOARDING PAGE
+   Page: auth/onboarding.html
+   Handles the post-signup sidekick setup flow and habit category picks.
+   ========================================================= */
+
+.onboarding-page {
+  padding: 28px 0;
+}
+
+.onboarding-card {
+  width: min(940px, 100%);
+}
+
+.centered-copy {
+  text-align: center;
+  display: grid;
+  justify-items: center;
+}
+
+.onboarding-form {
+  display: grid;
+  gap: 18px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.habit-category-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.habit-category-option {
+  cursor: pointer;
+}
+
+.habit-category-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.habit-category-option span {
+  display: block;
+  min-height: 54px;
+  padding: 15px 16px;
+  border: var(--border);
+  border-radius: 18px;
+  background: #fffdf7;
+  box-shadow: var(--shadow-sm);
+  font-weight: 800;
+  text-align: center;
+  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.habit-category-option:hover span,
+.habit-category-option input:checked + span {
+  transform: translateY(-2px) rotate(-0.4deg);
+  background: #dff6df;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 760px) {
+  .habit-category-picker {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .habit-category-picker {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   DASHBOARD UPDATE: HABITS + PRIORITIES + PROGRESS
+   Page: dashboard.html
+   Combines habit cards, add habit action, priorities, and charts into cleaner cards.
+   ========================================================= */
+
+.habit-priority-card,
+.progress-section-card {
+  margin: 26px 0;
+}
+
+.habit-priority-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.compact-topline {
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+.habit-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.daily-habits-strip {
+  margin-bottom: 22px;
+  padding: 18px;
+  border: var(--border);
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 249, 239, 0.94), rgba(255, 231, 119, 0.24));
+  box-shadow: 0 6px 0 rgba(60, 42, 40, 0.10);
+}
+
+.daily-habits-copy {
+  margin-bottom: 14px;
+}
+
+.daily-habits-copy h4 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.daily-habits-copy p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.daily-habits-strip .mini-habit-grid {
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.daily-habits-strip .mini-habit {
+  min-height: 116px;
+  padding: 14px 10px;
+  background: rgba(255, 253, 245, 0.92);
+}
+
+.daily-habits-strip .mini-habit:hover {
+  transform: translateY(-2px) rotate(-0.4deg);
+}
+
+
+.add-habit-btn,
+.small-btn {
+  min-height: auto;
+  padding: 0.62rem 0.95rem;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(60, 42, 40, 0.14);
+}
+
+.small-btn {
+  background: #fffdf5;
+}
+
+.habit-priority-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.habits-column {
+  min-width: 0;
+}
+
+.section-mini-title {
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-size: 1rem;
+  font-family: "Space Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.habit-priority-card .goal-section {
+  margin-bottom: 0;
+}
+
+.habit-priority-card .goal-grid {
+  margin-top: 0;
+}
+
+.habit-priority-card .daily-planner {
+  top: 18px;
+}
+
+.habit-priority-card .planner-body {
+  max-height: min(72vh, 820px);
+}
+
+.habit-priority-card .task-list {
+  max-height: calc(min(72vh, 820px) - 120px);
+}
+
+.habit-priority-card .task-item {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.habit-priority-card .task-title {
+  font-weight: 700;
+}
+
+.habit-priority-card .task-item .actions {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.empty-inline {
+  padding: 18px;
+  border: var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}
+
+.progress-section-card .dashboard-stats-grid {
+  margin-bottom: 0;
+}
+
+.progress-inner-card {
+  padding: 20px;
+  border: var(--border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 5px 0 rgba(60, 42, 40, 0.10);
+}
+
+.progress-inner-card.weekly-progress,
+.progress-inner-card.goal-summary {
+  min-height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .habit-priority-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-habits-strip .mini-habit-grid {
+    grid-template-columns: repeat(2, minmax(130px, 1fr));
+  }
+
+  .habit-priority-card .planner-column {
+    order: initial;
+  }
+
+  .habit-priority-card .daily-planner {
+    position: relative;
+    top: 0;
+  }
+
+  .habit-priority-card .planner-body,
+  .habit-priority-card .task-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 720px) {
+  .habit-priority-header {
+    flex-direction: column;
+  }
+
+  .daily-habits-strip {
+    padding: 14px;
+  }
+
+  .habit-header-actions,
+  .add-habit-btn,
+  .small-btn {
+    width: 100%;
+  }
+
+  .daily-habits-strip .mini-habit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   PROGRESS COMPLETION LIST + WEEK NAV
+   Page: Dashboard
+   Adds a clean list of today's finished habits and simple weekly chart arrows.
+   ========================================================= */
+
+.completed-today-list {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  background: rgba(255, 249, 239, 0.72);
+  box-shadow: 3px 3px 0 rgba(60, 42, 40, 0.12);
+}
+
+.completed-today-list h4 {
+  margin: 0 0 0.65rem;
+  font-size: 0.95rem;
+}
+
+.completed-today-list ul {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+}
+
+.completed-today-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid rgba(60, 42, 40, 0.18);
+  border-radius: 14px;
+  background: #fffdf6;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.completed-check {
+  display: inline-grid;
+  width: 1.4rem;
+  height: 1.4rem;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--mint);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.small-empty {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.weekly-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.weekly-progress-header h3 {
+  margin: 0;
+}
+
+.week-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: #fff9ef;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.week-arrow {
+  width: 2rem;
+  height: 2rem;
+  display: inline-grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.week-arrow:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.week-arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.week-range {
+  min-width: 8.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .weekly-progress-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .week-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .week-range {
+    min-width: auto;
+  }
+}

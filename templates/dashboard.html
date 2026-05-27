@@ -14,89 +14,100 @@
     <div>
       <span class="eyebrow">Your cozy control center</span>
       <h2>Hello, {{ user.username }} ✿</h2>
-      <p class="dashboard-subtitle">Check progress, start a timer, and line up your top priorities for the day.</p>
+      <p class="dashboard-subtitle">Check your habits, choose your top priorities, and help your sidekick grow one tiny win at a time.</p>
     </div>
     <div class="dashboard-chips">
       <span class="info-chip">{{ completed_today }} done today</span>
-      <span class="info-chip alt">{{ total_today }} total goals</span>
+      <span class="info-chip alt">{{ total_today }} total habits</span>
     </div>
   </div>
 </section>
 
-<section class="focus-timer retro-card lilac">
-  <div class="panel-topline">
-    <span class="panel-kicker">Focus timer</span>
-    <span class="panel-pill">Pomodoro mode</span>
+<section class="sidekick-hub retro-window"
+         data-sidekick-name="{{ user.sidekick_name or 'Mochi' }}"
+         data-sidekick-character="{{ user.sidekick_character or 'dino' }}"
+         data-completed-today="{{ completed_today }}"
+         data-total-today="{{ total_today }}"
+         data-percent-today="{{ percent_today|round(0) }}">
+  <div class="window-bar">
+    <div class="window-dots"><span></span><span></span><span></span></div>
+    <span class="window-title">sidekick://home</span>
   </div>
 
-  <h3>Set your session and get going</h3>
+  <div class="sidekick-layout">
+    <div class="sidekick-scene" id="sidekickScene">
+      <div class="sidekick-speech" id="sidekickSpeech">Ready for a cozy productive day?</div>
 
-  <div class="timer-controls">
-    <div class="timer-display" id="timerDisplay">25:00</div>
+      <button class="sidekick-avatar" id="sidekickAvatar" type="button" aria-label="Cheer on your sidekick">
+        <span class="sidekick-accessory" id="sidekickAccessory"></span>
+        <img id="sidekickImage" src="{{ url_for('static', filename='img/sidekicks/' ~ (user.sidekick_character or 'dino') ~ '.png') }}" alt="Your sidekick character">
+      </button>
 
-    <input type="range" id="timeSlider" min="0" max="120" step="5" value="25">
-    <p>⏳ Duration: <span id="timeValue">25</span> minutes</p>
-
-    <div class="timer-buttons">
-      <button id="startTimer" class="btn btn-secondary">Start</button>
-      <button id="resetTimer" class="btn danger">Reset</button>
+      <div class="sparkle-field" id="sparkleField" aria-hidden="true"></div>
     </div>
-  </div>
-</section>
 
-<div id="focusModal" class="focus-modal hidden">
-  <div class="focus-content retro-window">
-    <div class="window-bar">
-      <div class="window-dots">
-        <span></span><span></span><span></span>
+    <div class="sidekick-panel">
+      <div class="panel-topline">
+        <span class="panel-kicker">Sidekick</span>
+        <span class="panel-pill soft" id="sidekickStage">Sprout</span>
       </div>
-      <span class="window-title">focus://mode</span>
+      <h3 id="sidekickName">{{ user.sidekick_name or 'Mochi' }}</h3>
+      <p class="sidekick-note">Your tiny buddy grows when you finish habits and tiny care tasks.</p>
+
+      <div class="sidekick-stats">
+        <div><strong id="sidekickLevel">1</strong><span>Level</span></div>
+        <div><strong id="sidekickXP">0</strong><span>XP</span></div>
+        <div><strong id="sidekickCoins">0</strong><span>Shards</span></div>
+      </div>
+
+      <div class="sidekick-meter">
+        <span>Growth</span>
+        <div class="meter-track"><div id="growthMeter" class="meter-fill"></div></div>
+      </div>
+
+      <div class="sidekick-actions">
+        <button class="btn btn-secondary" id="feedSidekick" type="button">Give Treat</button>
+        <button class="btn" id="editSidekickName" type="button">Edit Name</button>
+      </div>
     </div>
-    <div class="focus-inner">
-      <h2>Focus Mode</h2>
-      <div id="focusCountdown" class="focus-countdown">25:00</div>
-      <button id="exitFocus" class="btn danger">Exit Focus Mode</button>
+  </div>
+</section>
+
+<div id="sidekickNameModal" class="modal hidden">
+  <div class="modal-content retro-window sidekick-name-modal">
+    <div class="window-bar">
+      <div class="window-dots"><span></span><span></span><span></span></div>
+      <span class="window-title">sidekick://rename</span>
+    </div>
+    <div class="modal-inner">
+      <h3>Rename your sidekick</h3>
+      <p class="sidekick-note">You can update the name anytime.</p>
+      <label for="sidekickNameInput">Sidekick name</label>
+      <form id="sidekickNameForm" method="POST" action="{{ url_for('auth.update_sidekick_name') }}">
+        <input id="sidekickNameInput" name="sidekick_name" class="sidekick-name-input" type="text" maxlength="24" placeholder="Mochi">
+      </form>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="saveSidekickName" type="submit" form="sidekickNameForm">Save Name</button>
+        <button class="btn" id="cancelSidekickName" type="button">Cancel</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="dashboard-stats-grid">
-  <section class="goal-summary retro-card cream">
-    <div class="panel-topline">
-      <span class="panel-kicker">Today</span>
-      <span class="panel-pill soft">Progress</span>
+<section class="habit-priority-card retro-card green">
+  <div class="habit-priority-header">
+    <div>
+      <div class="panel-topline compact-topline">
+        <span class="panel-kicker">Habits</span>
+      </div>
+      <h3>Your Habits</h3>
+      <p class="hint">Drag any habit into priorities to keep it on your short list.</p>
     </div>
-
-    <h3>Your Progress Today</h3>
-    <div class="progress-container" style="--progress: {{ percent_today|round(0) }}%;">
-      <div class="progress-bar"></div>
+    <div class="habit-header-actions">
+      <button id="openGoalModal" class="add-habit-btn" type="button">+ Add Habit</button>
+      <button id="toggleGoals" class="btn toggle-btn small-btn" type="button">Show All</button>
     </div>
-
-    <p>{{ completed_today }} of {{ total_today }} goals completed ({{ percent_today|round(0) }}%)</p>
-    {% if total_today > 0 and completed_today == total_today %}
-      <p class="celebrate">🎉 You’ve completed all your goals for today!</p>
-    {% endif %}
-  </section>
-
-  <section class="weekly-progress retro-card blue">
-    <div class="panel-topline">
-      <span class="panel-kicker">Weekly view</span>
-      <span class="panel-pill">Chart</span>
-    </div>
-    <h3>📊 Weekly Progress</h3>
-    <div class="chart-wrap">
-      <canvas id="progressChart"></canvas>
-    </div>
-  </section>
-</div>
-
-<section class="add-goal retro-card peach">
-  <div class="panel-topline">
-    <span class="panel-kicker">Create</span>
-    <span class="panel-pill">New goal</span>
   </div>
-  <h3>Add something worth tracking</h3>
-  <button id="openGoalModal" class="add-goal-btn">+ Add Goal</button>
 
   <div id="goalModal" class="modal hidden">
     <div class="modal-content retro-window">
@@ -104,11 +115,11 @@
         <div class="window-dots">
           <span></span><span></span><span></span>
         </div>
-        <span class="window-title">focus://new-goal</span>
+        <span class="window-title">focus://new-habit</span>
       </div>
       <span id="closeGoalModal" class="close-btn">&times;</span>
       <div class="modal-body">
-        <h3>Add a New Goal</h3>
+        <h3>Add a New Habit</h3>
         <form method="POST" class="goal-form">
           {{ form.hidden_tag() }}
           <div class="form-grid">
@@ -136,137 +147,194 @@
       </div>
     </div>
   </div>
+
+  <div class="habit-priority-layout">
+    <div class="habits-column">
+      <div class="daily-habits-strip" aria-labelledby="dailyHabitsTitle">
+        <div class="daily-habits-copy">
+          <div class="panel-topline compact-topline">
+            <span class="panel-kicker">Daily habits</span>
+          </div>
+          <h4 id="dailyHabitsTitle">Build your sidekick's day</h4>
+          <p>Small care tasks that refresh each morning.</p>
+        </div>
+
+        <div class="mini-habit-grid" id="miniHabitGrid">
+          <button class="mini-habit" data-habit="water" type="button"><span>💧</span><strong>Drink water</strong><small>+8 XP</small></button>
+          <button class="mini-habit" data-habit="stretch" type="button"><span>🌿</span><strong>Stretch</strong><small>+8 XP</small></button>
+          <button class="mini-habit" data-habit="tidy" type="button"><span>🧺</span><strong>Tidy desk</strong><small>+8 XP</small></button>
+          <button class="mini-habit" data-habit="reflect" type="button"><span>✨</span><strong>Reflect</strong><small>+8 XP</small></button>
+        </div>
+      </div>
+
+      <div id="todaySection" class="goal-section">
+        <h4 class="section-mini-title">Today</h4>
+        {% if goals %}
+          <div id="todayGoals" class="goal-grid">
+            {% for goal in goals %}
+              <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
+                   data-goal-id="{{ goal.id }}" draggable="true">
+                <div class="goal-header">
+                  <h4>{{ goal.title }}</h4>
+                  <span class="badge 
+                    {% if goal.repeat_type == 'none' %}badge-once
+                    {% elif goal.repeat_type == 'daily' %}badge-daily
+                    {% elif goal.repeat_type == 'weekly' %}badge-weekly
+                    {% elif goal.repeat_type == 'monthly' %}badge-monthly
+                    {% endif %}">
+                    {{ goal.repeat_type|capitalize }}
+                  </span>
+                </div>
+
+                <p class="desc">{{ goal.description or 'A little progress still counts.' }}</p>
+
+                <div class="meta">
+                  <span class="category">{{ goal.category }}</span>
+                  {% if goal.target_day %}
+                    {% if goal.repeat_type == "monthly" %}
+                      <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                    {% else %}
+                      <span class="target">🗓 {{ goal.target_day }}</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+                <div class="actions">
+                  {% if not goal.is_completed %}
+                    <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark Complete</a>
+                  {% else %}
+                    <span class="completed-text">✅ Completed</span>
+                  {% endif %}
+                  <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-inline">No habits scheduled for today 🎉</p>
+        {% endif %}
+      </div>
+
+      <div id="allSection" class="goal-section hidden">
+        <h4 class="section-mini-title">All upcoming</h4>
+        {% if all_goals %}
+          <div id="allGoals" class="goal-grid">
+            {% for goal in all_goals %}
+              <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
+                   data-goal-id="{{ goal.id }}" draggable="true">
+                <div class="goal-header">
+                  <h4>{{ goal.title }}</h4>
+                  <span class="badge">{{ goal.repeat_type|capitalize }}</span>
+                </div>
+
+                <p class="desc">{{ goal.description or 'A little progress still counts.' }}</p>
+
+                <div class="meta">
+                  <span class="category">{{ goal.category }}</span>
+                  {% if goal.target_day %}
+                    {% if goal.repeat_type == "monthly" %}
+                      <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
+                    {% else %}
+                      <span class="target">🗓 {{ goal.target_day }}</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+                <div class="actions">
+                  {% if not goal.is_completed %}
+                    <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark Complete</a>
+                  {% else %}
+                    <span class="completed-text">✅ Completed</span>
+                  {% endif %}
+                  <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-inline">No habits found yet. Add one to get started!</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <aside class="planner-column">
+      <section class="daily-planner retro-window" id="priorityBox">
+        <div class="window-bar">
+          <div class="window-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="window-title">focus://priorities</span>
+        </div>
+        <div class="planner-body">
+          <h3>⭐ Priorities</h3>
+          <p class="hint">Drag a habit here to make it a priority.</p>
+
+          <ul id="priority-list" class="task-list">
+            {% for p in priorities %}
+              <li class="task-item" data-goal-id="{{ p.id }}" draggable="true">
+                <span class="task-title">{{ p.title }}</span>
+                <div class="actions">
+                  <a href="{{ url_for('main.complete_goal', goal_id=p.id) }}" class="btn-complete">Mark Complete</a>
+                  <button class="remove-btn" data-action="remove" title="Remove from Priorities">×</button>
+                </div>
+              </li>
+            {% else %}
+              <li class="empty">No priorities yet. Drag a habit to add one!</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    </aside>
+  </div>
 </section>
 
-<div class="toggle-container">
-  <button id="toggleGoals" class="btn toggle-btn">Show All Goals</button>
-</div>
-
-<section class="dashboard-grid">
-  <div class="goals-column">
-    <div id="todaySection" class="goal-section retro-card green">
-      <div class="panel-topline">
-        <span class="panel-kicker">Today</span>
-        <span class="panel-pill soft">Action list</span>
-      </div>
-      <h3>Today's Goals</h3>
-      {% if goals %}
-        <div id="todayGoals" class="goal-grid">
-          {% for goal in goals %}
-            <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
-                 data-goal-id="{{ goal.id }}" draggable="true">
-              <div class="goal-header">
-                <h4>{{ goal.title }}</h4>
-                <span class="badge 
-                  {% if goal.repeat_type == 'none' %}badge-once
-                  {% elif goal.repeat_type == 'daily' %}badge-daily
-                  {% elif goal.repeat_type == 'weekly' %}badge-weekly
-                  {% elif goal.repeat_type == 'monthly' %}badge-monthly
-                  {% endif %}">
-                  {{ goal.repeat_type|capitalize }}
-                </span>
-              </div>
-
-              <p class="desc">{{ goal.description or 'A little progress still counts.' }}</p>
-
-              <div class="meta">
-                <span class="category">{{ goal.category }}</span>
-                {% if goal.target_day %}
-                  {% if goal.repeat_type == "monthly" %}
-                    <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
-                  {% else %}
-                    <span class="target">🗓 {{ goal.target_day }}</span>
-                  {% endif %}
-                {% endif %}
-              </div>
-
-              <div class="actions">
-                {% if not goal.is_completed %}
-                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark Complete</a>
-                {% else %}
-                  <span class="completed-text">✅ Completed</span>
-                {% endif %}
-                <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>No goals scheduled for today 🎉</p>
-      {% endif %}
-    </div>
-
-    <div id="allSection" class="goal-section retro-card blue hidden">
-      <div class="panel-topline">
-        <span class="panel-kicker">Everything</span>
-        <span class="panel-pill soft">Full list</span>
-      </div>
-      <h3>All Upcoming Goals</h3>
-      {% if all_goals %}
-        <div id="allGoals" class="goal-grid">
-          {% for goal in all_goals %}
-            <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
-                 data-goal-id="{{ goal.id }}" draggable="true">
-              <div class="goal-header">
-                <h4>{{ goal.title }}</h4>
-                <span class="badge">{{ goal.repeat_type|capitalize }}</span>
-              </div>
-
-              <p class="desc">{{ goal.description or 'A little progress still counts.' }}</p>
-
-              <div class="meta">
-                <span class="category">{{ goal.category }}</span>
-                {% if goal.target_day %}
-                  {% if goal.repeat_type == "monthly" %}
-                    <span class="target">🗓 {{ goal.target_day.split('-')[-1] }}</span>
-                  {% else %}
-                    <span class="target">🗓 {{ goal.target_day }}</span>
-                  {% endif %}
-                {% endif %}
-              </div>
-
-              <div class="actions">
-                {% if not goal.is_completed %}
-                  <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark Complete</a>
-                {% else %}
-                  <span class="completed-text">✅ Completed</span>
-                {% endif %}
-                <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger">Delete</a>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p>No goals found yet. Add some to get started!</p>
-      {% endif %}
-    </div>
+<section class="progress-section-card retro-card cream">
+  <div class="panel-topline">
+    <span class="panel-kicker">Progress</span>
+    <span class="panel-pill soft">Charts</span>
   </div>
 
-  <div class="planner-column">
-    <section class="daily-planner retro-window" id="priorityBox">
-      <div class="window-bar">
-        <div class="window-dots">
-          <span></span><span></span><span></span>
-        </div>
-        <span class="window-title">focus://priorities</span>
+  <div class="dashboard-stats-grid">
+    <section class="goal-summary progress-inner-card">
+      <h3>Your Progress Today</h3>
+      <div class="progress-container" style="--progress: {{ percent_today|round(0) }}%;">
+        <div class="progress-bar"></div>
       </div>
-      <div class="planner-body">
-        <h3>⭐ Priorities</h3>
-        <p class="hint">Drag a goal here to make it a priority</p>
 
-        <ul id="priority-list" class="task-list">
-          {% for p in priorities %}
-            <li class="task-item" data-goal-id="{{ p.id }}" draggable="true">
-              <span class="task-title">{{ p.title }}</span>
-              <div class="actions">
-                <button class="check-btn" data-action="complete" title="Mark Complete">✓</button>
-                <button class="remove-btn" data-action="remove" title="Remove from Priorities">×</button>
-              </div>
-            </li>
-          {% else %}
-            <li class="empty">No priorities yet. Drag a goal to add one!</li>
-          {% endfor %}
-        </ul>
+      <p>{{ completed_today }} of {{ total_today }} habits completed ({{ percent_today|round(0) }}%)</p>
+      {% if total_today > 0 and completed_today == total_today %}
+        <p class="celebrate">🎉 You’ve completed all your habits for today!</p>
+      {% endif %}
+
+      <div class="completed-today-list">
+        <h4>Completed today</h4>
+        {% if completed_goals_today %}
+          <ul id="completedTodayList">
+            {% for goal in completed_goals_today %}
+              <li data-goal-id="{{ goal.id }}">
+                <span class="completed-check">✓</span>
+                <span>{{ goal.title }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p id="completedTodayEmpty" class="empty-inline small-empty">Nothing completed yet. Tiny wins go here.</p>
+          <ul id="completedTodayList"></ul>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="weekly-progress progress-inner-card">
+      <div class="weekly-progress-header">
+        <h3>📊 Weekly Progress</h3>
+        <div class="week-controls" aria-label="Weekly progress navigation">
+          <button id="prevWeek" class="week-arrow" type="button" aria-label="Previous week">‹</button>
+          <span id="weekRange" class="week-range">This week</span>
+          <button id="nextWeek" class="week-arrow" type="button" aria-label="Next week">›</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="progressChart"></canvas>
       </div>
     </section>
   </div>

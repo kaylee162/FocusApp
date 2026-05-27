@@ -1,21 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Sign Up{% endblock %}
+{% block title %}Create Account{% endblock %}
 {% block content %}
 
 <div class="auth-container">
   <div class="auth-card retro-window">
     <div class="window-bar">
-      <div class="window-dots">
-        <span></span><span></span><span></span>
-      </div>
+      <div class="window-dots"><span></span><span></span><span></span></div>
       <span class="window-title">focus://signup</span>
     </div>
 
     <div class="auth-card-inner">
       <div class="auth-copy">
         <span class="eyebrow">Create your space</span>
-        <h2>Start building brighter habits.</h2>
-        <p class="subtitle">Make an account to track goals, plan your day, and stay focused in one playful workspace.</p>
+        <h2>Start with the basics.</h2>
+        <p class="subtitle">Make your account first. Then you’ll choose your sidekick, give them a name, and pick your habit focus areas.</p>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -26,39 +24,31 @@
         {% endif %}
       {% endwith %}
 
-      <form method="POST" class="auth-form">
+      <form method="POST" class="auth-form" id="signupForm">
         {{ form.hidden_tag() }}
 
         <div class="form-group">
           {{ form.username.label }}
           {{ form.username(placeholder="Choose a username") }}
-          {% for error in form.username.errors %}
-            <small class="error">{{ error }}</small>
-          {% endfor %}
+          {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
 
         <div class="form-group">
           {{ form.email.label }}
           {{ form.email(placeholder="your.email@example.com") }}
-          {% for error in form.email.errors %}
-            <small class="error">{{ error }}</small>
-          {% endfor %}
+          {% for error in form.email.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
 
         <div class="form-group">
           {{ form.password.label }}
           {{ form.password(placeholder="Create a strong password") }}
-          {% for error in form.password.errors %}
-            <small class="error">{{ error }}</small>
-          {% endfor %}
+          {% for error in form.password.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
 
         <div class="form-group">
           {{ form.confirm_password.label }}
           {{ form.confirm_password(placeholder="Confirm your password") }}
-          {% for error in form.confirm_password.errors %}
-            <small class="error">{{ error }}</small>
-          {% endfor %}
+          {% for error in form.confirm_password.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
 
         {{ form.submit(class="submit-btn") }}

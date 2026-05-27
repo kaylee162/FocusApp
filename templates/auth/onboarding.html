@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Set Up Your Sidekick{% endblock %}
+{% block content %}
+
+<div class="auth-container onboarding-page">
+  <div class="auth-card onboarding-card retro-window">
+    <div class="window-bar">
+      <div class="window-dots"><span></span><span></span><span></span></div>
+      <span class="window-title">sidekick://onboarding</span>
+    </div>
+
+    <div class="auth-card-inner">
+      <div class="auth-copy centered-copy">
+        <span class="eyebrow">Welcome, {{ current_user.username }} ✿</span>
+        <h2>Choose your habit buddy.</h2>
+        <p class="subtitle">Your sidekick will cheer you on while you build habits and finish focus sessions.</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="onboarding-form" id="onboardingForm">
+        {{ form.hidden_tag() }}
+        {{ form.sidekick_character(id="sidekickCharacterField", class="visually-hidden") }}
+
+        <section class="onboarding-sidekick" aria-label="Choose your sidekick">
+          <div class="panel-topline">
+            <span class="panel-kicker">Step 1</span>
+            <span class="panel-pill soft">Pick your buddy</span>
+          </div>
+
+          <div class="character-picker" id="onboardingCharacterPicker">
+            {% set selected_character = form.sidekick_character.data or 'dino' %}
+            {% for value, label in form.sidekick_character.choices %}
+              <button class="character-option {% if value == selected_character %}selected{% endif %}" type="button" data-character="{{ value }}" aria-pressed="{{ 'true' if value == selected_character else 'false' }}">
+                <img src="{{ url_for('static', filename='img/sidekicks/' ~ value ~ '.png') }}" alt="{{ label }} sidekick">
+                <span>{{ label }}</span>
+              </button>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="onboarding-sidekick" aria-label="Name your sidekick">
+          <div class="panel-topline">
+            <span class="panel-kicker">Step 2</span>
+            <span class="panel-pill soft">Name them</span>
+          </div>
+          <div class="form-group">
+            {{ form.sidekick_name.label }}
+            {{ form.sidekick_name(placeholder="Mochi") }}
+            {% for error in form.sidekick_name.errors %}<small class="error">{{ error }}</small>{% endfor %}
+          </div>
+        </section>
+
+        <section class="onboarding-sidekick" aria-label="Choose habit categories">
+          <div class="panel-topline">
+            <span class="panel-kicker">Step 3</span>
+            <span class="panel-pill soft">Focus areas</span>
+          </div>
+          <p class="sidekick-note">Pick a few areas you want to track. You can still add any habits later.</p>
+
+          <div class="habit-category-picker">
+            {% set selected_categories = form.habit_categories.data or [] %}
+            {% for value, label in form.habit_categories.choices %}
+              <label class="habit-category-option">
+                <input type="checkbox" name="habit_categories" value="{{ value }}" {% if value in selected_categories %}checked{% endif %}>
+                <span>{{ label }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </section>
+
+        {{ form.submit(class="submit-btn") }}
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
