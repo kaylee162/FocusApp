@@ -3,85 +3,73 @@
 {% block content %}
 
 <div class="landing-page">
-  <section class="hero retro-window hero-window">
-    <div class="window-bar">
-      <div class="window-dots">
-        <span></span><span></span><span></span>
+  <section class="hero-layout">
+    <div class="hero-copy">
+      <h1>Grow a <span class="highlight">tiny sidekick<svg viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M4 12 C 60 2, 120 18, 180 8 S 270 4, 296 10" stroke="#ffc857" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span> while you build better habits.</h1>
+      <p class="subtitle">
+        Sidekick turns your daily goals and focus sessions into XP for a cute little companion.
+        Complete habits, collect shards, and watch your buddy evolve into new forms.
+      </p>
+
+      <div class="hero-actions">
+        <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Get started</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-large">Log in</a>
       </div>
-      <span class="window-title">sidekick://home</span>
+
+      <div class="mini-badges">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Habit tracking</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Focus timer</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Virtual pet progress</span>
+      </div>
     </div>
 
-    <div class="hero-layout">
-      <div class="hero-copy">
-        <span class="eyebrow">Cute habits • Focus sessions • Sidekick growth</span>
-        <h1>Grow a tiny sidekick while you build better habits.</h1>
-        <p class="subtitle">
-          Sidekick turns your daily goals and focus sessions into XP for a cute little companion.
-          Complete habits, collect shards, and watch your buddy evolve into new forms.
-        </p>
+    <div class="hero-art" aria-hidden="true">
+      <div class="hero-blob"></div>
+      <div class="hero-ground"></div>
+      <svg class="sparkle hero-cloud-a" viewBox="0 0 80 44"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
+      <svg class="sparkle hero-cloud-b" viewBox="0 0 80 44"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
+      <img class="hero-sidekick" src="{{ url_for('static', filename='img/sidekicks/dino.png') }}" alt="">
+      <svg class="sparkle hero-spark-a" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      <svg class="sparkle hero-spark-b" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
+      <div class="hero-sticker">focus!</div>
 
-        <div class="hero-actions">
-          <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Get Started</a>
-          <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-large">Log In</a>
-        </div>
-
-        <div class="mini-badges">
-          <span>✓ Habit tracking</span>
-          <span>✓ Focus timer</span>
-          <span>✓ Virtual pet progress</span>
+      <div class="float-card float-card-task">
+        <span class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/></svg></span>
+        <div>
+          <strong>Drink water</strong>
+          <small>Done · +8 XP</small>
         </div>
       </div>
 
-      <div class="hero-art">
-        <div class="hero-sticker sticker-a">focus!</div>
-        <div class="hero-sticker sticker-b">habit mode</div>
-        <div class="phone-frame">
-          <img src="{{ url_for('static', filename='img/focus_illustration.png') }}" alt="Focus App Illustration">
-        </div>
+      <div class="float-card float-card-level">
+        <div class="row"><span>Mochi · Lv 3</span><span>Buddy</span></div>
+        <div class="mini-meter"><span></span></div>
       </div>
     </div>
   </section>
 
-  <section class="feature-showcase">
-    <div class="section-heading">
-      <span class="eyebrow">Why it works</span>
-      <h2>Tamagotchi-style productivity</h2>
+  <section class="feature-grid">
+    <div class="feature-card mint">
+      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 20 4c-1 9-6 15-15 15z"/><path d="M5 19l7-7"/></svg></span>
+      <div>
+        <h3>Gentle habits</h3>
+        <p>Daily, weekly or one-time. Drag your top ones into priorities.</p>
+      </div>
     </div>
-
-    <div class="feature-grid">
-      <article class="feature-card retro-card peach">
-        <div class="feature-thumb">
-          <img src="{{ url_for('static', filename='img/goals.png') }}" alt="Goal Tracking">
-        </div>
-        <h3>Track habits clearly</h3>
-        <p>See today’s goals, tiny self-care habits, and completed wins in one cozy dashboard.</p>
-      </article>
-
-      <article class="feature-card retro-card blue">
-        <div class="feature-thumb">
-          <img src="{{ url_for('static', filename='img/timer.png') }}" alt="Focus Timer">
-        </div>
-        <h3>Focus to earn rewards</h3>
-        <p>Finish focus sprints to give your sidekick XP and shards for treats.</p>
-      </article>
-
-      <article class="feature-card retro-card green">
-        <div class="feature-thumb">
-          <img src="{{ url_for('static', filename='img/schedule.png') }}" alt="Daily Planner">
-        </div>
-        <h3>Grow your companion</h3>
-        <p>Your sidekick changes forms, celebrates streaks, and reacts when you check things off.</p>
-      </article>
+    <div class="feature-card butter">
+      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/></svg></span>
+      <div>
+        <h3>Cozy focus</h3>
+        <p>Short focus sessions that feel like a warm cup of tea.</p>
+      </div>
     </div>
-  </section>
-
-  <section class="cta-panel retro-card lilac">
-    <div>
-      <span class="eyebrow">Ready to jump in?</span>
-      <h2>Make routines feel like caring for a tiny friend.</h2>
-      <p>Create an account and start turning your habits into a cozy adventure.</p>
+    <div class="feature-card blush">
+      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span>
+      <div>
+        <h3>A buddy that grows</h3>
+        <p>Sprout → Buddy → Explorer → Legend, one tiny win at a time.</p>
+      </div>
     </div>
-    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Create Your Account</a>
   </section>
 </div>
 

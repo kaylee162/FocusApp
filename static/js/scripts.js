@@ -180,12 +180,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     priorityBox.addEventListener("dragover", (e) => e.preventDefault());
 
-    priorityBox.addEventListener("drop", async (e) => {
+    priorityBox.addEventListener("drop", (e) => {
       e.preventDefault();
       priorityBox.classList.remove("dragging-over");
+      addToPriorities(e.dataTransfer.getData("goal-id"), e.dataTransfer.getData("goal-title"));
+    });
 
-      const goalId = e.dataTransfer.getData("goal-id");
-      const goalTitle = e.dataTransfer.getData("goal-title");
+    // Touch devices can't drag-and-drop, so goal cards show a tap button instead
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-prioritize");
+      if (!btn) return;
+      const card = btn.closest(".goal-card");
+      addToPriorities(card.dataset.goalId, card.querySelector("h4").innerText);
+      btn.classList.add("added");
+      priorityBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    async function addToPriorities(goalId, goalTitle) {
       if (!goalId) return;
 
       if (priorityList.querySelector(`[data-goal-id="${goalId}"]`)) return;
@@ -209,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ goal_id: goalId })
       });
-    });
+    }
 
     if (goalsColumn) {
       goalsColumn.addEventListener("dragover", (e) => {
@@ -289,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!hasItems && !empty) {
         const li = document.createElement("li");
         li.className = "empty";
-        li.textContent = "No priorities yet. Drag a goal to add one!";
+        li.textContent = "No priorities yet. Drag or star a habit to add one!";
         priorityList.appendChild(li);
       } else if (hasItems && empty) {
         empty.remove();
@@ -378,11 +389,12 @@ async function loadWeeklyProgress() {
         label: "Habits Completed",
         data: counts,
         backgroundColor: [
-          "#8bcf7b", "#9fdaf5", "#f7a7d8", "#ffe777", "#ffc7b3", "#ccb8ff", "#8bcf7b"
+          "#b9a8f5", "#7dd3a8", "#ffb9a0", "#ffc857", "#8cc7f0", "#f58bb0", "#6b55d6"
         ],
-        borderColor: "#3c2a28",
-        borderWidth: 2,
-        borderRadius: 10
+        borderWidth: 0,
+        borderRadius: 12,
+        borderSkipped: false,
+        maxBarThickness: 48
       }]
     },
     options: {
@@ -391,24 +403,25 @@ async function loadWeeklyProgress() {
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { precision: 0, color: "#3c2a28" },
-          grid: { color: "rgba(60, 42, 40, 0.15)" },
-          border: { color: "#3c2a28" }
+          ticks: { precision: 0, color: "#5e5977", font: { family: "Nunito Sans", weight: "600" } },
+          grid: { color: "rgba(45, 41, 70, 0.07)" },
+          border: { display: false }
         },
         x: {
-          ticks: { color: "#3c2a28" },
+          ticks: { color: "#2d2946", font: { family: "Nunito Sans", weight: "700" } },
           grid: { display: false },
-          border: { color: "#3c2a28" }
+          border: { display: false }
         }
       },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#fff6dd",
-          titleColor: "#3c2a28",
-          bodyColor: "#3c2a28",
-          borderColor: "#3c2a28",
-          borderWidth: 2
+          backgroundColor: "#2d2946",
+          titleColor: "#ffffff",
+          bodyColor: "#ffffff",
+          padding: 10,
+          cornerRadius: 12,
+          displayColors: false
         }
       }
     }
@@ -431,8 +444,21 @@ function addCompletedTodayItem(goalId, title) {
 }
 
 
-const SIDEKICK_KEY = "focus-sidekick-v1";
-const MINI_HABIT_KEY = "focus-mini-habits-v1";
+const SIDEKICK_KEY_BASE = "focus-sidekick-v1";
+const MINI_HABIT_KEY_BASE = "focus-mini-habits-v1";
+
+function getCurrentUserId() {
+  const hub = document.querySelector(".sidekick-hub");
+  return hub?.dataset.userId || "guest";
+}
+
+function getSidekickStorageKey() {
+  return `${SIDEKICK_KEY_BASE}-user-${getCurrentUserId()}`;
+}
+
+function getMiniHabitStorageKey() {
+  return `${MINI_HABIT_KEY_BASE}-user-${getCurrentUserId()}`;
+}
 
 const sidekickCharacters = {
   dino: {
@@ -486,8 +512,7 @@ function loadSidekickState() {
   };
 
   try {
-    const saved = JSON.parse(localStorage.getItem(SIDEKICK_KEY)) || {};
-    const legacyCharacter = saved.character || saved.form || fallback.character;
+    const saved = JSON.parse(localStorage.getItem(getSidekickStorageKey())) || {};    const legacyCharacter = saved.character || saved.form || fallback.character;
     return {
       ...fallback,
       ...saved,
@@ -504,7 +529,7 @@ function loadSidekickState() {
 }
 
 function saveSidekickState(state) {
-  localStorage.setItem(SIDEKICK_KEY, JSON.stringify(state));
+  localStorage.setItem(getSidekickStorageKey(), JSON.stringify(state));
 }
 
 function calculateSidekickLevel(xp) {
@@ -600,27 +625,101 @@ function initOnboarding() {
 
 function initMiniHabits() {
   const grid = document.getElementById("miniHabitGrid");
-  const resetButton = document.getElementById("resetMiniHabits");
+  const openEditor = document.getElementById("openMiniHabitEditor");
+  const modal = document.getElementById("miniHabitEditorModal");
+  const editorList = document.getElementById("miniHabitEditorList");
+  const addRowButton = document.getElementById("addMiniHabitRow");
+  const saveEditButton = document.getElementById("saveMiniHabitsEdit");
+  const cancelEditButton = document.getElementById("cancelMiniHabitsEdit");
+  const iconChoices = ["💧", "🌿", "🧺", "✨", "🍎", "📚", "🧘", "🎨", "📝", "🌞", "⭐", "💪"];
+  
   if (!grid) return;
 
   const today = getTodayKey();
+  const storageKey = getMiniHabitStorageKey();
+
+  const defaultTasks = [
+    { id: "water", emoji: "💧", title: "Drink water", xp: 8 },
+    { id: "stretch", emoji: "🌿", title: "Stretch", xp: 8 },
+    { id: "tidy", emoji: "🧺", title: "Tidy desk", xp: 8 },
+    { id: "reflect", emoji: "✨", title: "Reflect", xp: 8 }
+  ];
+
   let miniHabits = {};
 
   try {
-    miniHabits = JSON.parse(localStorage.getItem(MINI_HABIT_KEY)) || {};
+    miniHabits = JSON.parse(localStorage.getItem(storageKey)) || {};
   } catch {
     miniHabits = {};
   }
 
-  if (miniHabits.date !== today) miniHabits = { date: today, completed: [] };
+  if (!miniHabits.tasks) miniHabits.tasks = defaultTasks;
+  if (miniHabits.date !== today) {
+    miniHabits.date = today;
+    miniHabits.completed = [];
+  }
 
   function saveMiniHabits() {
-    localStorage.setItem(MINI_HABIT_KEY, JSON.stringify(miniHabits));
+    localStorage.setItem(storageKey, JSON.stringify(miniHabits));
+  }
+
+  function clampXP(value) {
+    return Math.min(10, Math.max(1, Number(value) || 1));
   }
 
   function renderMiniHabits() {
-    grid.querySelectorAll(".mini-habit").forEach((button) => {
-      button.classList.toggle("done", miniHabits.completed.includes(button.dataset.habit));
+    grid.innerHTML = "";
+
+    miniHabits.tasks.forEach((task) => {
+      const button = document.createElement("button");
+      button.className = "mini-habit";
+      button.type = "button";
+      button.dataset.habit = task.id;
+      button.dataset.xp = task.xp;
+
+      if (miniHabits.completed.includes(task.id)) {
+        button.classList.add("done");
+      }
+
+      button.innerHTML = `
+        <span>${task.emoji || "⭐"}</span>
+        <strong>${task.title}</strong>
+        <small>+${task.xp} XP</small>
+      `;
+
+      grid.appendChild(button);
+    });
+  }
+
+  function renderEditorRows() {
+    if (!editorList) return;
+
+    editorList.innerHTML = "";
+
+    miniHabits.tasks.forEach((task) => {
+      const row = document.createElement("div");
+      row.className = "mini-habit-editor-row";
+      row.dataset.id = task.id;
+      row.dataset.icon = task.emoji || "⭐";
+
+      row.innerHTML = `
+        <div class="icon-picker" aria-label="Pick a task icon">
+          ${iconChoices.map((icon) => `
+            <button 
+              class="icon-choice ${icon === task.emoji ? "selected" : ""}" 
+              type="button" 
+              data-icon="${icon}">
+              ${icon}
+            </button>
+          `).join("")}
+        </div>
+
+        <input class="mini-task-title" type="text" maxlength="40" value="${task.title}" aria-label="Task title">
+        <input class="mini-task-xp" type="number" min="1" max="10" value="${task.xp}" aria-label="Task XP">
+        <button class="remove-mini-task" type="button">Remove</button>
+      `;
+
+      editorList.appendChild(row);
     });
   }
 
@@ -628,18 +727,93 @@ function initMiniHabits() {
     const button = event.target.closest(".mini-habit");
     if (!button || miniHabits.completed.includes(button.dataset.habit)) return;
 
+    const xp = clampXP(button.dataset.xp);
+
     miniHabits.completed.push(button.dataset.habit);
     saveMiniHabits();
     renderMiniHabits();
-    awardSidekickProgress(8, 4, `${button.querySelector("strong").textContent} complete! +8 XP`);
+
+    awardSidekickProgress(
+      xp,
+      4,
+      `${button.querySelector("strong").textContent} complete! +${xp} XP`
+    );
   });
 
-  if (resetButton) {
-    resetButton.addEventListener("click", () => {
-      miniHabits = { date: today, completed: [] };
+  if (openEditor && modal) {
+    openEditor.addEventListener("click", () => {
+      renderEditorRows();
+      modal.classList.remove("hidden");
+    });
+  }
+
+  if (addRowButton) {
+    addRowButton.addEventListener("click", () => {
+      miniHabits.tasks.push({
+        id: `custom-${Date.now()}`,
+        emoji: "⭐",
+        title: "New task",
+        xp: 5
+      });
+
+      renderEditorRows();
+    });
+  }
+
+  if (editorList) {
+    const iconButton = event.target.closest(".icon-choice");
+    if (iconButton) {
+      const row = iconButton.closest(".mini-habit-editor-row");
+      row.dataset.icon = iconButton.dataset.icon;
+
+      row.querySelectorAll(".icon-choice").forEach((button) => {
+        button.classList.remove("selected");
+      });
+
+      iconButton.classList.add("selected");
+      return;
+    }
+    
+    editorList.addEventListener("click", (event) => {
+      const removeButton = event.target.closest(".remove-mini-task");
+      if (!removeButton) return;
+
+      const row = removeButton.closest(".mini-habit-editor-row");
+      const taskId = row.dataset.id;
+
+      miniHabits.tasks = miniHabits.tasks.filter((task) => task.id !== taskId);
+      miniHabits.completed = miniHabits.completed.filter((id) => id !== taskId);
+
+      renderEditorRows();
+    });
+  }
+
+  if (saveEditButton) {
+    saveEditButton.addEventListener("click", () => {
+      const rows = editorList.querySelectorAll(".mini-habit-editor-row");
+
+      miniHabits.tasks = [...rows].map((row) => ({
+        id: row.dataset.id,
+        emoji: row.dataset.icon || "⭐",        title: row.querySelector(".mini-task-title").value.trim() || "Untitled task",
+        xp: clampXP(row.querySelector(".mini-task-xp").value)
+      }));
+
       saveMiniHabits();
       renderMiniHabits();
-      setSidekickSpeech("Fresh start! Pick a tiny habit to begin.");
+      modal.classList.add("hidden");
+      setSidekickSpeech("Daily tasks updated!");
+    });
+  }
+
+  if (cancelEditButton) {
+    cancelEditButton.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) modal.classList.add("hidden");
     });
   }
 

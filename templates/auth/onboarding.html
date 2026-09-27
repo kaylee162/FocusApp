@@ -3,15 +3,10 @@
 {% block content %}
 
 <div class="auth-container onboarding-page">
-  <div class="auth-card onboarding-card retro-window">
-    <div class="window-bar">
-      <div class="window-dots"><span></span><span></span><span></span></div>
-      <span class="window-title">sidekick://onboarding</span>
-    </div>
-
+  <div class="auth-card onboarding-card card">
     <div class="auth-card-inner">
       <div class="auth-copy centered-copy">
-        <span class="eyebrow">Welcome, {{ current_user.username }} ✿</span>
+        <span class="eyebrow">Welcome, {{ current_user.username }}</span>
         <h2>Choose your habit buddy.</h2>
         <p class="subtitle">Your sidekick will cheer you on while you build habits and finish focus sessions.</p>
       </div>
@@ -29,10 +24,7 @@
         {{ form.sidekick_character(id="sidekickCharacterField", class="visually-hidden") }}
 
         <section class="onboarding-sidekick" aria-label="Choose your sidekick">
-          <div class="panel-topline">
-            <span class="panel-kicker">Step 1</span>
-            <span class="panel-pill soft">Pick your buddy</span>
-          </div>
+          <div class="step-title"><span class="step-num">1</span>Pick your buddy</div>
 
           <div class="character-picker" id="onboardingCharacterPicker">
             {% set selected_character = form.sidekick_character.data or 'dino' %}
@@ -46,22 +38,16 @@
         </section>
 
         <section class="onboarding-sidekick" aria-label="Name your sidekick">
-          <div class="panel-topline">
-            <span class="panel-kicker">Step 2</span>
-            <span class="panel-pill soft">Name them</span>
-          </div>
+          <div class="step-title"><span class="step-num">2</span>Name them</div>
           <div class="form-group">
-            {{ form.sidekick_name.label }}
+            {{ form.sidekick_name.label(class="visually-hidden") }}
             {{ form.sidekick_name(placeholder="Mochi") }}
             {% for error in form.sidekick_name.errors %}<small class="error">{{ error }}</small>{% endfor %}
           </div>
         </section>
 
         <section class="onboarding-sidekick" aria-label="Choose habit categories">
-          <div class="panel-topline">
-            <span class="panel-kicker">Step 3</span>
-            <span class="panel-pill soft">Focus areas</span>
-          </div>
+          <div class="step-title"><span class="step-num">3</span>What do you want to grow?</div>
           <p class="sidekick-note">Pick a few areas you want to track. You can still add any habits later.</p>
 
           <div class="habit-category-picker">
