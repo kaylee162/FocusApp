@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Today · Sidekick{% endblock %}
+{% block body_class %}page-dashboard{% endblock %}
 {% block content %}
 
 {% macro category_icon(category) -%}
@@ -16,70 +17,64 @@
 {%- endmacro %}
 
 {% macro goal_card(goal) %}
-  <div class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
+  <article class="goal-card {{ goal.category|lower }} {% if goal.is_completed %}completed{% endif %}"
        data-goal-id="{{ goal.id }}" draggable="true">
-    <div class="goal-header">
-      <div class="goal-title-row">
-        <span class="goal-icon">{{ category_icon(goal.category) }}</span>
-        <h4>{{ goal.title }}</h4>
-      </div>
-      <span class="badge
-        {% if goal.repeat_type == 'none' %}badge-once
-        {% elif goal.repeat_type == 'daily' %}badge-daily
-        {% elif goal.repeat_type == 'weekly' %}badge-weekly
-        {% elif goal.repeat_type == 'monthly' %}badge-monthly
-        {% endif %}">
-        {{ goal.repeat_type|capitalize }}
+    <header class="goal-header">
+      <span class="goal-icon">{{ category_icon(goal.category) }}</span>
+      <h4>{{ goal.title }}</h4>
+      <span class="badge badge-{{ 'once' if goal.repeat_type == 'none' else goal.repeat_type }}">
+        {{ 'Once' if goal.repeat_type == 'none' else goal.repeat_type|capitalize }}
       </span>
-    </div>
+    </header>
 
-    <p class="desc">{{ goal.description or 'A little progress still counts.' }}</p>
+    {% if goal.description %}<p class="desc">{{ goal.description }}</p>{% endif %}
 
-    <div class="meta">
+    <div class="meta micro">
       <span class="category">{{ goal.category }}</span>
       {% if goal.target_day %}
         <span class="target">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16v14H4z M4 10h16 M8 3v4 M16 3v4"/></svg>
-          {% if goal.repeat_type == "monthly" %}{{ goal.target_day.split('-')[-1] }}{% else %}{{ goal.target_day }}{% endif %}
+          {% if goal.repeat_type == "monthly" %}day {{ goal.target_day.split('-')[-1] }}{% else %}{{ goal.target_day }}{% endif %}
         </span>
       {% endif %}
+      <span class="goal-id">no. {{ '%03d' % goal.id }}</span>
     </div>
 
     <div class="actions">
       {% if not goal.is_completed %}
-        <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn-complete">Mark complete</a>
-      {% else %}
-        <span class="completed-text">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>
-          Completed
-        </span>
-      {% endif %}
-      {% if not goal.is_completed %}
-        <button class="btn btn-prioritize" type="button" aria-label="Add {{ goal.title }} to priorities" title="Add to priorities">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
+        <a href="{{ url_for('main.complete_goal', goal_id=goal.id) }}" class="btn btn-ink btn-small btn-complete">
+          <svg aria-hidden="true"><use href="#m-check"/></svg>Done
+        </a>
+        <button class="icon-btn btn-prioritize" type="button" aria-label="Add {{ goal.title }} to priorities" title="Add to priorities">
+          <svg aria-hidden="true"><use href="#m-star"/></svg>
         </button>
+      {% else %}
+        <span class="completed-text">Done today</span>
       {% endif %}
-      <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="btn danger" aria-label="Delete {{ goal.title }}" title="Delete">
+      <a href="{{ url_for('main.delete_goal', goal_id=goal.id) }}" class="icon-btn danger" aria-label="Delete {{ goal.title }}" title="Delete">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13"/></svg>
       </a>
     </div>
-  </div>
+  </article>
 {% endmacro %}
 
-<section class="dashboard-header">
-  <div class="dashboard-header-inner">
-    <h2>Hello, {{ user.username }}
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-    </h2>
-    <p class="dashboard-subtitle">Check your habits, choose your top priorities, and help your sidekick grow one tiny win at a time.</p>
-  </div>
-  <div class="dashboard-chips">
-    <span class="info-chip"><strong>{{ completed_today }}</strong>done today</span>
-    <span class="info-chip alt"><strong>{{ total_today }}</strong>total habits</span>
+{# ---------- Masthead ---------- #}
+<section class="dash-masthead shell" aria-labelledby="dashTitle">
+  <h1 class="dash-title" id="dashTitle" data-reveal="drop">
+    <span class="display">Today</span>
+    <span class="script">hey {{ user.username }}</span>
+  </h1>
+
+  <div class="dash-date display" data-today-stack aria-hidden="true"><span>--</span><span>--</span><span>--</span></div>
+
+  <div class="dash-chips">
+    <span class="sticker sticker-rose" style="--r:-4deg"><strong>{{ completed_today }}</strong> done today</span>
+    <span class="sticker sticker-paper" style="--r:3deg"><strong>{{ total_today }}</strong> on today's list</span>
   </div>
 </section>
 
-<section class="sidekick-hub card"
+{# ---------- Sidekick hub ---------- #}
+<section class="sidekick-hub sheet shell-wide"
+         aria-label="Your sidekick"
          data-user-id="{{ user.id }}"
          data-sidekick-name="{{ user.sidekick_name or 'Mochi' }}"
          data-sidekick-character="{{ user.sidekick_character or 'dino' }}"
@@ -88,14 +83,13 @@
          data-percent-today="{{ percent_today|round(0) }}">
   <div class="sidekick-layout">
     <div class="sidekick-scene" id="sidekickScene">
-      <svg class="scene-cloud-a" viewBox="0 0 80 44" aria-hidden="true"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <svg class="scene-cloud-b" viewBox="0 0 80 44" aria-hidden="true"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <svg class="scene-hills" viewBox="0 0 640 150" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0 70 C 150 20, 300 90, 450 50 S 600 30, 640 50 L640 150 L0 150 Z" fill="#a8e0c8"/>
-        <path d="M0 110 C 200 70, 380 130, 640 95 L640 150 L0 150 Z" fill="#7dd3a8"/>
-      </svg>
+      <span class="dotcloud" aria-hidden="true"></span>
+      <svg class="zig zig-a" aria-hidden="true"><use href="#m-zigzag"/></svg>
+      <svg class="zig zig-b" aria-hidden="true"><use href="#m-zigzag"/></svg>
+      <span class="micro scene-corner scene-corner-tl" aria-hidden="true">specimen</span>
+      <span class="micro scene-corner scene-corner-br" aria-hidden="true">tap to tickle</span>
 
-      <div class="sidekick-speech" id="sidekickSpeech" aria-live="polite">Ready for a cozy productive day?</div>
+      <div class="sidekick-speech" id="sidekickSpeech" aria-live="polite">Ready for a good day?</div>
 
       <button class="sidekick-avatar" id="sidekickAvatar" type="button" aria-label="Cheer on your sidekick">
         <span class="sidekick-accessory" id="sidekickAccessory"></span>
@@ -107,117 +101,116 @@
 
     <div class="sidekick-panel">
       <div class="panel-topline">
-        <span class="panel-kicker">Sidekick</span>
-        <span class="panel-pill" id="sidekickStage">Sprout</span>
+        <span class="micro">your sidekick</span>
+        <span class="pill" id="sidekickStage">Sprout</span>
       </div>
-      <h3 id="sidekickName">{{ user.sidekick_name or 'Mochi' }}</h3>
-      <p class="sidekick-note">Your tiny buddy grows when you finish habits and tiny care tasks.</p>
+      <h2 class="display sidekick-name" id="sidekickName">{{ user.sidekick_name or 'Mochi' }}</h2>
+      <p class="sidekick-note">Grows every time you finish a habit or a tiny care task.</p>
 
-      <div class="sidekick-stats">
-        <div><strong id="sidekickLevel">1</strong><span>Level</span></div>
-        <div><strong id="sidekickXP">0</strong><span>XP</span></div>
-        <div><strong id="sidekickCoins">0</strong><span>Shards</span></div>
-      </div>
+      <dl class="sidekick-stats">
+        <div><dt class="micro">level</dt><dd id="sidekickLevel">1</dd></div>
+        <div><dt class="micro">xp</dt><dd id="sidekickXP">0</dd></div>
+        <div><dt class="micro">shards</dt><dd id="sidekickCoins">0</dd></div>
+      </dl>
 
       <div class="sidekick-meter">
-        <span>Growth</span>
+        <div class="meter-label micro"><span>growth to next level</span><span>100 xp</span></div>
         <div class="meter-track"><div id="growthMeter" class="meter-fill"></div></div>
       </div>
 
       <div class="sidekick-actions">
-        <button class="btn btn-secondary" id="feedSidekick" type="button">Give treat</button>
-        <button class="btn" id="editSidekickName" type="button">Edit name</button>
+        <button class="btn btn-primary" id="feedSidekick" type="button">Give a treat <span class="btn-meta">10 shards</span></button>
+        <button class="btn btn-ghost" id="editSidekickName" type="button">Rename</button>
       </div>
     </div>
   </div>
 </section>
 
-<div id="sidekickNameModal" class="modal hidden">
-  <div class="modal-content card sidekick-name-modal">
-    <div class="modal-inner">
-      <h3>Rename your sidekick</h3>
-      <p class="sidekick-note">You can update the name anytime.</p>
+<div id="sidekickNameModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="renameTitle">
+  <div class="modal-content sheet">
+    <span class="tape" aria-hidden="true"></span>
+    <h3 class="sheet-title" id="renameTitle">New name?</h3>
+    <p class="sheet-sub">Change it whenever. They won't take it personally.</p>
+    <form id="sidekickNameForm" class="form-group" method="POST" action="{{ url_for('auth.update_sidekick_name') }}">
       <label for="sidekickNameInput">Sidekick name</label>
-      <form id="sidekickNameForm" method="POST" action="{{ url_for('auth.update_sidekick_name') }}">
-        <input id="sidekickNameInput" name="sidekick_name" class="sidekick-name-input" type="text" maxlength="24" placeholder="Mochi">
-      </form>
-      <div class="modal-actions">
-        <button class="btn btn-primary" id="saveSidekickName" type="submit" form="sidekickNameForm">Save name</button>
-        <button class="btn" id="cancelSidekickName" type="button">Cancel</button>
-      </div>
+      <input id="sidekickNameInput" name="sidekick_name" class="sidekick-name-input" type="text" maxlength="24" placeholder="Mochi">
+    </form>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="saveSidekickName" type="submit" form="sidekickNameForm">Save name</button>
+      <button class="btn btn-ghost" id="cancelSidekickName" type="button">Cancel</button>
     </div>
   </div>
 </div>
 
-<section class="habit-priority-card card">
-  <div class="habit-priority-header">
+{# ---------- Habits + priorities ---------- #}
+<section class="habit-priority-card sheet shell-wide" aria-labelledby="habitsTitle">
+  <header class="habit-priority-header">
     <div>
-      <span class="panel-kicker">Habits</span>
-      <h3>Your habits</h3>
+      <h2 class="display section-display" id="habitsTitle">Habits</h2>
       <p class="hint">
-        <span class="hint-pointer">Drag any habit into priorities to keep it on your short list.</span>
-        <span class="hint-touch">Tap the star on any habit to add it to your priorities.</span>
+        <span class="hint-pointer">Drag a habit onto the short list, or hit its star.</span>
+        <span class="hint-touch">Tap the star on a habit to add it to your short list.</span>
       </p>
     </div>
     <div class="habit-header-actions">
-      <button id="openGoalModal" class="add-habit-btn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Add habit
+      <button id="openGoalModal" class="btn btn-primary add-habit-btn" type="button">
+        <svg aria-hidden="true"><use href="#m-plus"/></svg>Add habit
       </button>
-      <button id="toggleGoals" class="btn toggle-btn" type="button">Show All</button>
+      <button id="toggleGoals" class="btn btn-ghost toggle-btn" type="button">Show All</button>
     </div>
-  </div>
+  </header>
 
-  <div id="goalModal" class="modal hidden">
-    <div class="modal-content card">
-      <span id="closeGoalModal" class="close-btn" role="button" tabindex="0" aria-label="Close">&times;</span>
-      <div class="modal-body">
-        <h3>Add a new habit</h3>
-        <form method="POST" class="goal-form">
-          {{ form.hidden_tag() }}
-          <div class="form-grid">
-            <div>
-              <label>{{ form.title.label }}</label>
-              {{ form.title(size=40) }}
-            </div>
-            <div>
-              <label>{{ form.category.label }}</label>
-              {{ form.category() }}
-            </div>
-            <div>
-              <label>{{ form.repeat_type.label }}</label>
-              {{ form.repeat_type(id="repeat_type") }}
-            </div>
-            <div id="target-day-field">
-              <label>{{ form.target_day.label }}</label>
-              {{ form.target_day(size=40, id="target_day") }}
-            </div>
-          </div>
-          <label>{{ form.description.label }}</label>
-          {{ form.description(rows=3, cols=40) }}
-          <p>{{ form.submit(class_="btn btn-primary") }}</p>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="miniHabitEditorModal" class="modal hidden">
-    <div class="modal-content card">
-      <div class="modal-inner">
-        <h3>Edit daily tasks</h3>
-        <p class="sidekick-note">Add, remove, or edit tiny tasks. XP must be between 1 and 10.</p>
-
-        <div id="miniHabitEditorList" class="mini-habit-editor-list"></div>
-
-        <button id="addMiniHabitRow" class="small-btn" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          Add task
-        </button>
-
-        <div class="modal-actions">
-          <button class="btn btn-primary" id="saveMiniHabitsEdit" type="button">Save tasks</button>
-          <button class="btn" id="cancelMiniHabitsEdit" type="button">Cancel</button>
+  <div id="goalModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="addHabitTitle">
+    <div class="modal-content sheet">
+      <span class="tape" aria-hidden="true"></span>
+      <button id="closeGoalModal" class="close-btn" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+      <h3 class="sheet-title" id="addHabitTitle">New habit</h3>
+      <form method="POST" class="goal-form">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.title.label(text="What's the habit?") }}
+          {{ form.title(placeholder="Read 10 pages") }}
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            {{ form.category.label }}
+            {{ form.category() }}
+          </div>
+          <div class="form-group">
+            {{ form.repeat_type.label }}
+            {{ form.repeat_type(id="repeat_type") }}
+          </div>
+        </div>
+        <div id="target-day-field" class="form-group">
+          {{ form.target_day.label }}
+          {{ form.target_day(id="target_day") }}
+        </div>
+        <div class="form-group">
+          {{ form.description.label(text="Notes (optional)") }}
+          {{ form.description(rows=3, placeholder="Before bed, phone in the other room") }}
+        </div>
+        {{ form.submit(class_="btn btn-primary btn-block", value="Add habit") }}
+      </form>
+    </div>
+  </div>
+
+  <div id="miniHabitEditorModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editTasksTitle">
+    <div class="modal-content sheet modal-wide">
+      <span class="tape" aria-hidden="true"></span>
+      <h3 class="sheet-title" id="editTasksTitle">Edit care tasks</h3>
+      <p class="sheet-sub">Add, remove, or rename. XP goes from 1 to 10.</p>
+
+      <div id="miniHabitEditorList" class="mini-habit-editor-list"></div>
+
+      <button id="addMiniHabitRow" class="btn btn-ghost btn-small" type="button">
+        <svg aria-hidden="true"><use href="#m-plus"/></svg>Add task
+      </button>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="saveMiniHabitsEdit" type="button">Save tasks</button>
+        <button class="btn btn-ghost" id="cancelMiniHabitsEdit" type="button">Cancel</button>
       </div>
     </div>
   </div>
@@ -226,96 +219,93 @@
     <div class="habits-column">
       <div class="daily-habits-strip" aria-labelledby="dailyHabitsTitle">
         <div class="daily-habits-header">
-          <div class="daily-habits-copy">
-            <span class="panel-kicker">Daily habits</span>
-            <h4 id="dailyHabitsTitle">Build your sidekick's day</h4>
-            <p>Small care tasks that refresh each morning.</p>
+          <div>
+            <h3 id="dailyHabitsTitle">Care tasks</h3>
+            <p>Tiny tickets that reset every morning. Tear one off when it's done.</p>
           </div>
+          <button id="openMiniHabitEditor" class="btn btn-ghost btn-small edit-daily-btn" type="button" aria-label="Edit care tasks">Edit</button>
         </div>
-
         <div class="mini-habit-grid" id="miniHabitGrid"></div>
-        <button id="openMiniHabitEditor" class="small-btn edit-daily-btn" type="button" aria-label="Edit daily tasks">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>
-          Edit
-        </button>
       </div>
 
       <div id="todaySection" class="goal-section">
-        <h4 class="section-mini-title">Today</h4>
+        <h3 class="section-mini-title"><span>Due today</span><span class="micro">{{ goals|length }} left</span></h3>
         {% if goals %}
           <div id="todayGoals" class="goal-grid">
             {% for goal in goals %}{{ goal_card(goal) }}{% endfor %}
           </div>
         {% else %}
-          <p class="empty-inline">No habits scheduled for today. Enjoy the calm!</p>
+          <div class="empty-inline">
+            <svg aria-hidden="true"><use href="#m-scribble"/></svg>
+            <p>Nothing left for today. Go outside, or add a habit.</p>
+          </div>
         {% endif %}
       </div>
 
       <div id="allSection" class="goal-section hidden">
-        <h4 class="section-mini-title">All upcoming</h4>
+        <h3 class="section-mini-title"><span>Everything, by next due date</span><span class="micro">{{ all_goals|length }} total</span></h3>
         {% if all_goals %}
           <div id="allGoals" class="goal-grid">
             {% for goal in all_goals %}{{ goal_card(goal) }}{% endfor %}
           </div>
         {% else %}
-          <p class="empty-inline">No habits found yet. Add one to get started!</p>
+          <div class="empty-inline">
+            <svg aria-hidden="true"><use href="#m-scribble"/></svg>
+            <p>No habits yet. Hit "Add habit" and start with something small.</p>
+          </div>
         {% endif %}
       </div>
     </div>
 
-    <aside class="planner-column">
+    <aside class="planner-column" aria-labelledby="shortListTitle">
       <section class="daily-planner" id="priorityBox">
-        <div class="planner-body">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="currentColor" stroke="#e0a92e" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
-            Priorities
-          </h3>
-          <p class="hint">
-            <span class="hint-pointer">Drag a habit here to make it a priority.</span>
-            <span class="hint-touch">Starred habits show up here.</span>
-          </p>
+        <h3 class="display planner-title" id="shortListTitle">Short list</h3>
+        <p class="hint">
+          <span class="hint-pointer">Drop habits here. Drag them back out to remove.</span>
+          <span class="hint-touch">Starred habits land here.</span>
+        </p>
 
-          <ul id="priority-list" class="task-list">
-            {% for p in priorities %}
-              <li class="task-item" data-goal-id="{{ p.id }}" draggable="true">
-                <span class="task-title">{{ p.title }}</span>
-                <div class="actions">
-                  <a href="{{ url_for('main.complete_goal', goal_id=p.id) }}" class="btn-complete">Mark complete</a>
-                  <button class="remove-btn" data-action="remove" title="Remove from Priorities" aria-label="Remove from priorities">×</button>
-                </div>
-              </li>
-            {% else %}
-              <li class="empty">No priorities yet. Drag or star a habit to add one!</li>
-            {% endfor %}
-          </ul>
-        </div>
+        <ul id="priority-list" class="task-list">
+          {% for p in priorities %}
+            <li class="task-item" data-goal-id="{{ p.id }}" draggable="true">
+              <span class="task-title">{{ p.title }}</span>
+              <div class="actions">
+                <a href="{{ url_for('main.complete_goal', goal_id=p.id) }}" class="btn-complete" aria-label="Mark {{ p.title }} done" title="Mark done">
+                  <svg aria-hidden="true"><use href="#m-check"/></svg>
+                </a>
+                <button class="remove-btn" data-action="remove" title="Remove from short list" aria-label="Remove {{ p.title }} from short list">×</button>
+              </div>
+            </li>
+          {% else %}
+            <li class="empty">Nothing here yet. Drag or star a habit.</li>
+          {% endfor %}
+        </ul>
+        <span class="drop-cue micro" aria-hidden="true">drop it here</span>
       </section>
     </aside>
   </div>
 </section>
 
-<section class="progress-section-card card">
-  <div class="panel-topline">
-    <span class="panel-kicker">Progress</span>
-  </div>
-
+{# ---------- Progress ---------- #}
+<section class="progress-section-card sheet shell-wide" aria-labelledby="progressTitle">
+  <h2 class="visually-hidden" id="progressTitle">Progress</h2>
   <div class="dashboard-stats-grid">
-    <section class="goal-summary progress-inner-card">
-      <h3>Your progress today</h3>
+    <section class="goal-summary" aria-label="Today's progress">
+      <span class="micro">today's progress</span>
       <div class="progress-summary">
-        <span class="progress-big">{{ percent_today|round(0)|int }}%</span>
-        <p>{{ completed_today }} of {{ total_today }} habits completed</p>
+        <span class="display progress-big">{{ percent_today|round(0)|int }}<small>%</small></span>
+        <p><strong>{{ completed_today }}</strong> of <strong>{{ total_today }}</strong> habits done</p>
       </div>
-      <div class="progress-container" style="--progress: {{ percent_today|round(0) }}%;">
+      <div class="progress-container" style="--progress: {{ percent_today|round(0) }}%;" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ percent_today|round(0)|int }}" aria-label="Habits completed today">
         <div class="progress-bar"></div>
       </div>
 
       {% if total_today > 0 and completed_today == total_today %}
-        <p class="celebrate">You’ve completed all your habits for today!</p>
+        <p class="celebrate sticker sticker-rose" style="--r:-3deg">Clean sweep. Every habit done today.</p>
       {% endif %}
 
       <div class="completed-today-list">
-        <h4>Completed today</h4>
+        <h3 class="micro">done today</h3>
         {% if completed_goals_today %}
           <ul id="completedTodayList">
             {% for goal in completed_goals_today %}
@@ -326,24 +316,25 @@
             {% endfor %}
           </ul>
         {% else %}
-          <p id="completedTodayEmpty" class="empty-inline small-empty">Nothing completed yet. Tiny wins go here.</p>
+          <p id="completedTodayEmpty" class="small-empty">Nothing yet. Tiny wins land here.</p>
           <ul id="completedTodayList"></ul>
         {% endif %}
       </div>
     </section>
 
-    <section class="weekly-progress progress-inner-card">
+    <section class="weekly-progress" aria-labelledby="weekTitle">
       <div class="weekly-progress-header">
-        <h3>Weekly progress</h3>
+        <h3 class="display week-title" id="weekTitle">The week</h3>
         <div class="week-controls" aria-label="Weekly progress navigation">
           <button id="prevWeek" class="week-arrow" type="button" aria-label="Previous week">‹</button>
-          <span id="weekRange" class="week-range">This week</span>
+          <span id="weekRange" class="week-range micro">This week</span>
           <button id="nextWeek" class="week-arrow" type="button" aria-label="Next week">›</button>
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="progressChart"></canvas>
+        <canvas id="progressChart" aria-label="Habits completed per day this week" role="img"></canvas>
       </div>
+      <div class="ruler" aria-hidden="true"></div>
     </section>
   </div>
 </section>

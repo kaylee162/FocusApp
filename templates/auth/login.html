@@ -1,45 +1,43 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Log in · Sidekick{% endblock %}
+{% block body_class %}page-auth{% endblock %}
 {% block content %}
 
-<div class="auth-container">
-  <div class="auth-card card">
-    <div class="auth-side">
-      <span class="eyebrow">Welcome back</span>
-      <h2>Log in and pick up where you left off.</h2>
-      <p class="subtitle">Your dashboard is ready with goals, priorities, and focus sessions waiting.</p>
+<div class="auth-stage shell">
+  <h1 class="auth-display" data-reveal="drop">
+    <span class="display">Hey again</span>
+    <span class="script" aria-hidden="true">missed you</span>
+  </h1>
 
-      <div class="auth-side-hill" aria-hidden="true"></div>
-      <svg class="sparkle hero-cloud-a" viewBox="0 0 80 44" aria-hidden="true"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <svg class="sparkle hero-spark-a" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      <img class="auth-side-art" src="{{ url_for('static', filename='img/sidekicks/fox.png') }}" alt="" aria-hidden="true">
-      <div class="auth-bubble" aria-hidden="true">Missed you!</div>
-    </div>
+  <div class="auth-collage" aria-hidden="true">
+    <span class="dotcloud"></span>
+    <svg class="zig"><use href="#m-zigzag"/></svg>
+    <img class="auth-buddy" src="{{ url_for('static', filename='img/halftone/fox.png') }}" alt="">
+    <span class="sticker sticker-ink auth-bubble" style="--r:-5deg">your buddy kept your seat warm</span>
+  </div>
 
-    <div class="auth-card-inner">
-      <h3>Log in</h3>
-      <p>Good to see you again.</p>
+  <div class="sheet auth-sheet" data-reveal="pop">
+    <span class="tape" aria-hidden="true"></span>
+    <h2 class="sheet-title">Log in</h2>
+    <p class="sheet-sub">Your habits and short list are right where you left them.</p>
 
-      <form method="POST" class="auth-form">
-        {{ form.hidden_tag() }}
+    <form method="POST" class="auth-form">
+      {{ form.hidden_tag() }}
 
-        <div class="form-group">
-          {{ form.username.label }}
-          {{ form.username(placeholder="Enter your username") }}
-        </div>
-
-        <div class="form-group">
-          {{ form.password.label }}
-          {{ form.password(placeholder="Enter your password") }}
-        </div>
-
-        {{ form.submit(class="submit-btn") }}
-      </form>
-
-      <div class="auth-footer">
-        Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign up here</a>
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(placeholder="your username", autocomplete="username") }}
       </div>
-    </div>
+
+      <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(placeholder="your password", autocomplete="current-password") }}
+      </div>
+
+      {{ form.submit(class="submit-btn btn btn-primary btn-block", value="Log in") }}
+    </form>
+
+    <p class="auth-footer">New here? <a href="{{ url_for('auth.signup') }}">Make an account</a></p>
   </div>
 </div>
 

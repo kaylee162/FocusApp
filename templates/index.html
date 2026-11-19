@@ -1,76 +1,114 @@
 {% extends "base.html" %}
-{% block title %}Welcome to Sidekick{% endblock %}
+{% block title %}Sidekick · tiny wins add up{% endblock %}
+{% block body_class %}page-landing{% endblock %}
 {% block content %}
 
-<div class="landing-page">
-  <section class="hero-layout">
-    <div class="hero-copy">
-      <h1>Grow a <span class="highlight">tiny sidekick<svg viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true"><path d="M4 12 C 60 2, 120 18, 180 8 S 270 4, 296 10" stroke="#ffc857" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span> while you build better habits.</h1>
-      <p class="subtitle">
-        Sidekick turns your daily goals and focus sessions into XP for a cute little companion.
-        Complete habits, collect shards, and watch your buddy evolve into new forms.
-      </p>
+<section class="zine-hero shell" aria-labelledby="heroTitle">
+  <h1 class="zine-hero-title" id="heroTitle" data-reveal="drop">
+    <span class="display">Tiny wins</span>
+    <span class="script" aria-hidden="true">add up</span>
+    <span class="visually-hidden">add up</span>
+  </h1>
 
-      <div class="hero-actions">
-        <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Get started</a>
-        <a href="{{ url_for('auth.login') }}" class="btn btn-large">Log in</a>
-      </div>
+  <div class="hero-collage" aria-hidden="true">
+    <span class="dotcloud dotcloud-a"></span>
+    <span class="dotcloud dotcloud-b"></span>
+    <svg class="zig zig-a"><use href="#m-zigzag"/></svg>
+    <svg class="zig zig-b"><use href="#m-zigzag"/></svg>
+    <span class="rose-block"></span>
+    <img class="hero-buddy" id="heroBuddy" src="{{ url_for('static', filename='img/halftone/dino.png') }}" alt="" data-buddies="dino fox panda cow" data-base="{{ url_for('static', filename='img/halftone/') }}">
+    <svg class="hero-asterisk"><use href="#m-asterisk"/></svg>
+  </div>
 
-      <div class="mini-badges">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Habit tracking</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Focus timer</span>
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Virtual pet progress</span>
-      </div>
-    </div>
+  <p class="hero-statement" data-reveal="left">
+    <strong>Build habits with a tiny buddy who levels up every time you show up.</strong>
+    <span>Daily, weekly, or once. No streak shame. Miss a day and your buddy still waves hello.</span>
+  </p>
 
-    <div class="hero-art" aria-hidden="true">
-      <div class="hero-blob"></div>
-      <div class="hero-ground"></div>
-      <svg class="sparkle hero-cloud-a" viewBox="0 0 80 44"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <svg class="sparkle hero-cloud-b" viewBox="0 0 80 44"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <img class="hero-sidekick" src="{{ url_for('static', filename='img/sidekicks/dino.png') }}" alt="">
-      <svg class="sparkle hero-spark-a" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      <svg class="sparkle hero-spark-b" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      <div class="hero-sticker">focus!</div>
+  <p class="hero-statement hero-statement-right" data-reveal="right">
+    <strong>Finish a habit, earn XP.</strong>
+    <span>Spend shards on treats. Watch a sprout turn into a legend.</span>
+  </p>
 
-      <div class="float-card float-card-task">
-        <span class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/></svg></span>
+  <ul class="sticker-board" aria-label="What's inside">
+    <li class="sticker sticker-ink" data-drag style="--r:-6deg">+8 XP · drink water</li>
+    <li class="sticker sticker-pill" data-drag style="--r:4deg">drag it into priorities</li>
+    <li class="sticker sticker-rose" data-drag style="--r:-3deg">Lv 3 · Buddy</li>
+    <li class="sticker sticker-paper" data-drag style="--r:7deg">4 buddies to pick from</li>
+  </ul>
+
+  <div class="hero-cta" data-reveal="pop">
+    <svg class="hero-cta-arrow" aria-hidden="true"><use href="#m-arrow"/></svg>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-large">Pick your buddy</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-large">I'm back, log in</a>
+  </div>
+
+  <span class="micro hero-corner hero-corner-bl" aria-hidden="true">poke the buddy</span>
+  <span class="micro hero-corner hero-corner-br" aria-hidden="true">no. 001 / 004</span>
+</section>
+
+<section class="routine paper-sheet" aria-labelledby="routineTitle">
+  <div class="shell">
+    <header class="section-head" data-reveal="up">
+      <h2 class="display section-display" id="routineTitle">The routine</h2>
+      <p class="section-lede">Three moves. That's the whole app.</p>
+    </header>
+
+    <ol class="routine-list">
+      <li class="routine-row" data-reveal="left">
+        <span class="routine-num">01</span>
         <div>
-          <strong>Drink water</strong>
-          <small>Done · +8 XP</small>
+          <h3>Pick a buddy</h3>
+          <p>Dino, fox, panda, or cow. Give them a name. They live on your dashboard now.</p>
         </div>
-      </div>
+        <div class="routine-art routine-art-strip" aria-hidden="true">
+          {% for c in ['dino', 'fox', 'panda', 'cow'] %}
+            <img src="{{ url_for('static', filename='img/halftone/' ~ c ~ '.png') }}" alt="" style="--i:{{ loop.index0 }}">
+          {% endfor %}
+        </div>
+      </li>
+      <li class="routine-row" data-reveal="right">
+        <span class="routine-num">02</span>
+        <div>
+          <h3>Stack your habits</h3>
+          <p>Daily, weekly, monthly, or one-off. Star the few that matter today and they jump to your short list.</p>
+        </div>
+        <div class="routine-art" aria-hidden="true">
+          <span class="sticker sticker-pill">Daily</span>
+          <span class="sticker sticker-ink" style="--r:-4deg">Read 10 pages</span>
+          <svg class="routine-star"><use href="#m-star"/></svg>
+        </div>
+      </li>
+      <li class="routine-row" data-reveal="left">
+        <span class="routine-num">03</span>
+        <div>
+          <h3>Show up, level up</h3>
+          <p>Every finished habit is XP for your buddy. Small care tasks count too. Shards buy treats.</p>
+        </div>
+        <div class="routine-art" aria-hidden="true">
+          <span class="sticker sticker-rose" style="--r:3deg">+15 XP</span>
+          <span class="sticker sticker-paper" style="--r:-5deg">+10 shards</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
 
-      <div class="float-card float-card-level">
-        <div class="row"><span>Mochi · Lv 3</span><span>Buddy</span></div>
-        <div class="mini-meter"><span></span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="feature-grid">
-    <div class="feature-card mint">
-      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19C5 10 11 5 20 4c-1 9-6 15-15 15z"/><path d="M5 19l7-7"/></svg></span>
-      <div>
-        <h3>Gentle habits</h3>
-        <p>Daily, weekly or one-time. Drag your top ones into priorities.</p>
-      </div>
-    </div>
-    <div class="feature-card butter">
-      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2h6"/></svg></span>
-      <div>
-        <h3>Cozy focus</h3>
-        <p>Short focus sessions that feel like a warm cup of tea.</p>
-      </div>
-    </div>
-    <div class="feature-card blush">
-      <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg></span>
-      <div>
-        <h3>A buddy that grows</h3>
-        <p>Sprout → Buddy → Explorer → Legend, one tiny win at a time.</p>
-      </div>
-    </div>
-  </section>
-</div>
+<section class="stage-run shell" aria-labelledby="stageTitle">
+  <h2 class="display stage-title" id="stageTitle" data-reveal="up">Sprout to legend</h2>
+  <div class="stage-track" data-scroll-fill>
+    <div class="stage-ticks" aria-hidden="true"><span class="stage-fill"></span></div>
+    <ol class="stage-stops">
+      <li><strong>Sprout</strong><span class="micro">lv 1</span></li>
+      <li><strong>Buddy</strong><span class="micro">lv 3</span></li>
+      <li><strong>Explorer</strong><span class="micro">lv 5</span></li>
+      <li><strong>Legend</strong><span class="micro">lv 8</span></li>
+    </ol>
+  </div>
+  <div class="stage-foot">
+    <p>Every 100 XP is a level. Reach level 3 and your sprout is officially a Buddy.</p>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Start at Sprout</a>
+  </div>
+</section>
 
 {% endblock %}

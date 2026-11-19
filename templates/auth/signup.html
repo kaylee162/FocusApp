@@ -1,67 +1,59 @@
 {% extends "base.html" %}
-{% block title %}Create Account{% endblock %}
+{% block title %}Sign up · Sidekick{% endblock %}
+{% block body_class %}page-auth{% endblock %}
 {% block content %}
 
-<div class="auth-container">
-  <div class="auth-card card">
-    <div class="auth-side lav">
-      <span class="eyebrow">Create your space</span>
-      <h2>Start with the basics.</h2>
-      <p class="subtitle">Make your account first. Then you’ll choose your sidekick, give them a name, and pick your habit focus areas.</p>
+<div class="auth-stage shell">
+  <h1 class="auth-display" data-reveal="drop">
+    <span class="display">New here</span>
+    <span class="script" aria-hidden="true">hi friend</span>
+  </h1>
 
-      <div class="auth-side-hill" aria-hidden="true"></div>
-      <svg class="sparkle hero-cloud-a" viewBox="0 0 80 44" aria-hidden="true"><path class="cloud" d="M14 40 a12 12 0 0 1 2-24 a16 16 0 0 1 30-6 a13 13 0 0 1 22 12 a9 9 0 0 1 -2 18 z"/></svg>
-      <svg class="sparkle hero-spark-a" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>
-      <img class="auth-side-art" src="{{ url_for('static', filename='img/sidekicks/panda.png') }}" alt="" aria-hidden="true">
-      <div class="auth-bubble" aria-hidden="true">Hi, new friend!</div>
-    </div>
+  <div class="auth-collage" aria-hidden="true">
+    <span class="dotcloud"></span>
+    <svg class="zig"><use href="#m-zigzag"/></svg>
+    <img class="auth-buddy" src="{{ url_for('static', filename='img/halftone/panda.png') }}" alt="">
+    <span class="sticker sticker-ink auth-bubble" style="--r:4deg">step 1 of 2 · buddy pick is next</span>
+  </div>
 
-    <div class="auth-card-inner">
-      <h3>Create account</h3>
-      <p>It only takes a minute.</p>
+  <div class="sheet auth-sheet" data-reveal="pop">
+    <span class="tape" aria-hidden="true"></span>
+    <h2 class="sheet-title">Make an account</h2>
+    <p class="sheet-sub">Four fields. Then you pick a buddy and name them.</p>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+    <form method="POST" class="auth-form" id="signupForm">
+      {{ form.hidden_tag() }}
 
-      <form method="POST" class="auth-form" id="signupForm">
-        {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(placeholder="pick a username", autocomplete="username") }}
+        {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      </div>
 
-        <div class="form-group">
-          {{ form.username.label }}
-          {{ form.username(placeholder="Choose a username") }}
-          {% for error in form.username.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
+      <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email(placeholder="you@example.com", autocomplete="email", type="email") }}
+        {% for error in form.email.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      </div>
 
-        <div class="form-group">
-          {{ form.email.label }}
-          {{ form.email(placeholder="your.email@example.com") }}
-          {% for error in form.email.errors %}<small class="error">{{ error }}</small>{% endfor %}
-        </div>
-
+      <div class="form-row">
         <div class="form-group">
           {{ form.password.label }}
-          {{ form.password(placeholder="Create a strong password") }}
+          {{ form.password(placeholder="6+ characters", autocomplete="new-password") }}
           {% for error in form.password.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
 
         <div class="form-group">
           {{ form.confirm_password.label }}
-          {{ form.confirm_password(placeholder="Confirm your password") }}
+          {{ form.confirm_password(placeholder="same again", autocomplete="new-password") }}
           {% for error in form.confirm_password.errors %}<small class="error">{{ error }}</small>{% endfor %}
         </div>
-
-        {{ form.submit(class="submit-btn") }}
-      </form>
-
-      <div class="auth-footer">
-        Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>
       </div>
-    </div>
+
+      {{ form.submit(class="submit-btn btn btn-primary btn-block") }}
+    </form>
+
+    <p class="auth-footer">Already have one? <a href="{{ url_for('auth.login') }}">Log in</a></p>
   </div>
 </div>
 

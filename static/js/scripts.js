@@ -381,6 +381,10 @@ async function loadWeeklyProgress() {
     return;
   }
 
+  const token = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const ink = token("--ink");
+  const paper = token("--paper");
+
   weeklyProgressChart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -388,13 +392,12 @@ async function loadWeeklyProgress() {
       datasets: [{
         label: "Habits Completed",
         data: counts,
-        backgroundColor: [
-          "#b9a8f5", "#7dd3a8", "#ffb9a0", "#ffc857", "#8cc7f0", "#f58bb0", "#6b55d6"
-        ],
+        backgroundColor: token("--ground"),
+        hoverBackgroundColor: token("--rose"),
         borderWidth: 0,
-        borderRadius: 12,
+        borderRadius: 3,
         borderSkipped: false,
-        maxBarThickness: 48
+        maxBarThickness: 56
       }]
     },
     options: {
@@ -403,12 +406,12 @@ async function loadWeeklyProgress() {
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { precision: 0, color: "#5e5977", font: { family: "Nunito Sans", weight: "600" } },
-          grid: { color: "rgba(45, 41, 70, 0.07)" },
+          ticks: { precision: 0, color: ink, font: { family: "Bricolage Grotesque", weight: "600" } },
+          grid: { color: "rgba(30, 30, 30, 0.12)" },
           border: { display: false }
         },
         x: {
-          ticks: { color: "#2d2946", font: { family: "Nunito Sans", weight: "700" } },
+          ticks: { color: ink, font: { family: "Anton", size: 14 } },
           grid: { display: false },
           border: { display: false }
         }
@@ -416,11 +419,13 @@ async function loadWeeklyProgress() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#2d2946",
-          titleColor: "#ffffff",
-          bodyColor: "#ffffff",
+          backgroundColor: ink,
+          titleColor: paper,
+          bodyColor: paper,
+          titleFont: { family: "Bricolage Grotesque", weight: "700" },
+          bodyFont: { family: "Bricolage Grotesque" },
           padding: 10,
-          cornerRadius: 12,
+          cornerRadius: 3,
           displayColors: false
         }
       }
